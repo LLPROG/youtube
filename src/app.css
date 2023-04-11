@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    box-sizing: border-box;
+    margin: 0
+}
+
+html {
+    font-family: Roboto, Arial, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+body {
+    overflow-Y: scroll;
+    position: fixed;
+    top:0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+body::-webkit-scrollbar {
+    width: 16px;
+}
+
+body::-webkit-scrollbar-thumb {
+    height: 56px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    border: 4px solid transparent;
+    background-clip: content-box;
+    background-color: gray;
+}
+
+body:not([hide-scroll])::-webkit-scrollbar-thumb {
+    height: 56px;
+    border-radius: 8px;
+    border: 4px solid transparent;
+    background-clip: content-box;
+    background-color: gray;
+}
+
+body.hide-scroll {
+    overflow-Y: hidden !important;
+    right: 16px;
+}
+
+body::before {
+    transition: 0.5s;
+    background: rgba(0,0,0,0);
+    content: "";
+}
+
+body.hide-scroll::before {
+    background: rgba(0,0,0,0.5);
+    content: "";
+    height: 100%;
+    width: 100%;  
+    opacity: 0.8;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1
+}
+
+a {
+    color: blue
+}
