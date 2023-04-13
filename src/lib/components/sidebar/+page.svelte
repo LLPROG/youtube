@@ -24,10 +24,11 @@
 				class="hamb text-2xl hover:bg-gray-300 p-2 rounded-full"
 				><Icon icon="ci:hamburger-lg" /></button
 			>
-			<button
+			<a
+				href="/"
 				on:click={() => {
 					showSidebarVideo = false;
-					goto('/');
+					document.body.classList.remove('hide-scroll');
 				}}
 				class="logo"
 			>
@@ -76,45 +77,52 @@
 						></g
 					></svg
 				>
-			</button>
+			</a>
 		</div>
 	{/if}
 	<ul class="flex flex-col gap-4 w-fit pt-4">
 		<li>
-			<button
+			<a
+				href="/"
+				data-sveltekit-replacestate
 				on:click={() => {
 					showSidebarVideo = false;
-					goto('/');
+					document.body.classList.remove('hide-scroll');
 				}}
 				class="flex items-center gap-2 hover:bg-gray-200 py-1 px-3 rounded-lg w-full "
 				><Icon icon="material-symbols:home" color="black" width="30" />
 				{#if showSidebar}
 					<span>Home</span>
 				{/if}
-			</button>
+			</a>
 		</li>
 		<li class="border-b-2 pb-2">
-			<button
+			<a
+				href="/sub"
+				data-sveltekit-replacestate
 				on:click={() => {
 					showSidebarVideo = false;
-					goto('/sub');
+					document.body.classList.remove('hide-scroll');
 				}}
 				class="flex items-center gap-2 hover:bg-gray-200 py-1 px-3 rounded-lg w-full"
 				><Icon icon="material-symbols:music-video-outline" color="black" width="30" />
 				{#if showSidebar}
 					<span>Iscrizioni</span>
 				{/if}
-			</button>
+			</a>
 		</li>
 		{#if login}
 			<li>
-				<button
+				<a
+					href="/likedVideo"
+					data-sveltekit-replacestate
 					on:click={() => {
-						goto('/likedVideo');
+						showSidebarVideo = false;
+						document.body.classList.remove('hide-scroll');
 					}}
 					class="flex items-center gap-2 hover:bg-gray-200 py-1 px-3 rounded-lg w-full"
 					><Icon icon="ph:video-light" width="30" />{#if showSidebar}<span>Video Piaciuti</span
-						>{/if}</button
+						>{/if}</a
 				>
 			</li>
 		{:else if showSidebar}

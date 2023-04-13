@@ -8,8 +8,11 @@
 
 	// console.log($page.url.pathname.startsWith('/video'));
 	$: showSid = true;
-	$: visible = false;
+	let visible = false;
+
 	const showSidebar = () => {
+		document.body.scrollTo(0, 0);
+
 		if ($page.url.pathname.startsWith('/video')) {
 			visible = !visible;
 			if (visible) {
@@ -19,6 +22,7 @@
 			}
 		} else {
 			showSid = !showSid;
+			visible = !visible;
 		}
 	};
 </script>
@@ -30,7 +34,7 @@
 		</div>
 		{#if $page.url.pathname.startsWith('/video')}
 			<div
-				class="sidebar-video pt-1 absolute top-0 h-[100vh] bg-white z-10"
+				class="sidebar-video pt-1 absolute top-0 h-[100vh] bg-white z-50"
 				style:left={visible ? '0px' : '-250px'}
 			>
 				<Sidebar on:showSidebarVideo={showSidebar} showSidebarVideo={visible} />

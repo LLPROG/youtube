@@ -21,14 +21,14 @@
 			>
 				<div class="thumb">
 					<img
-						src={video.snippet.thumbnails.standard.url}
+						src={video.snippet.thumbnails.standard?.url}
 						alt={video.snippet.title}
 						class="rounded-xl object-cover aspect-video"
 					/>
 				</div>
 
 				<div class="description flex gap-3 mt-4 text-gray-600 text-start">
-					<img src={video.snippet.thumbnails.standard.url} alt="" class="rounded-full w-10 h-10" />
+					<img src={video.snippet.thumbnails.standard?.url} alt="" class="rounded-full w-10 h-10" />
 					<div class="flex flex-col items-start">
 						<h3
 							class="text-black font-semibold overflow-hidden w-full max-h-12 text-ellipsis line-clamp-2"

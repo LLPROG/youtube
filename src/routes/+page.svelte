@@ -10,25 +10,23 @@
 
 <div class="index flex flex-wrap px-10 pt-5 justify-start w-fit">
 	{#each videos as video}
-		<div
-			class="cont-card shrink-0 grow-0 p-3 md:basis-1/2 lg:basis-1/3 xl:basis-1/4 w-full min-w-[19vw]"
-		>
+		<div class="cont-card shrink-0 grow-0 p-3 md:basis-1/2 lg:basis-1/3 xl:basis-1/4 w-full">
 			<button
 				on:click={() => {
-					goto(`/video/${video.id}`);
+					goto(`/video/${video?.id}`);
 				}}
 				class="card cursor-pointer p-0"
 			>
 				<div class="thumb">
 					<img
-						src={video.snippet.thumbnails.standard.url}
+						src={video.snippet.thumbnails.standard?.url}
 						alt={video.snippet.title}
 						class="rounded-md object-cover aspect-video"
 					/>
 				</div>
 
 				<div class="description flex gap-3 mt-4 text-gray-600 text-start">
-					<img src={video.snippet.thumbnails.standard.url} alt="" class="rounded-full w-10 h-10" />
+					<img src={video.snippet.thumbnails.standard?.url} alt="" class="rounded-full w-10 h-10" />
 					<div class="flex flex-col items-start">
 						<h3
 							class="text-black font-semibold overflow-hidden w-full max-h-12 text-ellipsis line-clamp-2"

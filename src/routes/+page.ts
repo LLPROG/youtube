@@ -1,20 +1,20 @@
-
-import type { Load } from "$types";
+import type { Load } from '$types';
+import { auth } from '$lib/global variable/auth';
 
 export const load: Load = async ({ fetch }) => {
-    const auth = 'AIzaSyCm7zlrnqyZUw7yO2DU0g3vu3F6WYC4tdA';
+	const videoRes = await fetch(
+		`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2Cstatistics&chart=mostPopular&maxResults=20&key=${auth}`,
+		{
+			method: 'get',
+			headers: new Headers({
+				Accept: 'application/json'
+			})
+		}
+	);
 
-    const videoRes = await fetch(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2Cstatistics&chart=mostPopular&maxResults=20&key=${auth}`, {
-        method: 'get',
-        headers: new Headers({
-            'Accept': 'application/json'
-        })
-    });
+	const videos = await videoRes.json();
 
-    const videos = await videoRes.json()
-
-    return {
-        videos
-    }
-
-}
+	return {
+		videos
+	};
+};

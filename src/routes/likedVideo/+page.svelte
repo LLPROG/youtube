@@ -1,18 +1,30 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
+	import { goto, beforeNavigate } from '$app/navigation';
 	import { compactNumber } from '$lib/global functions/compactNumer';
 	import { daysBetween } from '$lib/global functions/days_between';
 	import type { PageData } from './$types';
 	import { flip } from 'svelte/animate';
 
 	export let data: PageData;
-	$: videos = data.videos.items;
+	let videos: any[];
+	if (data.videos) {
+		videos = data.videos.items;
+	}
 	let draggableElement: any = null;
 	let overDragId: any = null;
-	let likedVideos = [...JSON.parse(localStorage.likedVideos)];
-	$: console.log(videos.length);
+	let startDragId: any = null;
+	let likedVideos: string[] = [];
+
+	if (localStorage.likedVideos) {
+		likedVideos = [...JSON.parse(localStorage.likedVideos)];
+	}
+
+	beforeNavigate(({ from }) => {
+		console.log(from?.url.pathname);
+	});
+	// $: console.log(videos.length);
 
 	function array_move(arr: any, old_index: any, new_index: any) {
 		if (new_index >= arr.length) {
@@ -26,6 +38,7 @@
 	}
 
 	function dragStart(i: any, e: any) {
+		startDragId = i;
 		draggableElement = null;
 		// console.log(e);
 		// console.log(i, 'dragstart');
@@ -35,125 +48,133 @@
 	}
 
 	function dragEnd(i: any, e: any) {
-		// console.log(i, 'dragend');
-		//-------------
 		setTimeout(() => (e.target.style.opacity = '1'), 0);
 		console.log(overDragId, 'over id');
+	}
 
-		array_move(videos, i, overDragId);
-		array_move(likedVideos, i, overDragId);
+	function dragOver(i: any, e: any) {
+		overDragId = i;
+	}
+
+	function dragDrop() {
+		console.log('drop');
+		array_move(videos, startDragId, overDragId);
+		// array_move(videos, i, overDragId);
+		array_move(likedVideos, startDragId, overDragId);
 		localStorage.likedVideos = JSON.stringify(likedVideos);
-
 		videos = videos;
 	}
 </script>
 
-<!-- {#if x}
-	<div class="flex justify-center">
+{#if !localStorage.likedVideos}
+	<div class="flex justify-center pt-10">
 		<p>Non sono presenti video</p>
 	</div>
-{:else} -->
-<div class="container flex pt-10 ps-16">
-	<div class="left-cont basis-1/4 shrink-0 min-w-[370px] ">
-		<div class="header border h-[85vh] rounded-2xl p-6 bg-slate-300">
-			<!-- play all videos -->
-			<div class="play-all-videos w-full h-60 flex items-center justify-center">
-				<div class="phone-card bg-black h-[100%] rounded-xl aspect-[9/16] flex items-center">
-					<img
-						src={videos[0].snippet.thumbnails.standard.url}
-						alt={videos[0].snippet.title}
-						class="rounded-md object-cover aspect-[9/16]"
-					/>
+{:else}
+	<div class="container flex pt-10 ps-16">
+		<div class="left-cont basis-1/4 shrink-0 min-w-[370px] ">
+			<div class="header border h-[85vh] rounded-2xl p-6 bg-slate-300">
+				<!-- play all videos -->
+				<div class="play-all-videos w-full h-60 flex items-center justify-center">
+					<div class="phone-card bg-black h-[100%] rounded-xl aspect-[9/16] flex items-center">
+						<img
+							src={videos[0].snippet.thumbnails.standard.url}
+							alt={videos[0].snippet.title}
+							class="rounded-md object-cover aspect-[9/16]"
+						/>
+					</div>
 				</div>
-			</div>
 
-			<!-- info -->
-			<div class="info text-white">
-				<h1 class="py-3 text-2xl font-bold">Video piaciuti</h1>
-				<h2 class="py-1 text-sm">{$page.data.user.name}</h2>
-				<p class="pb-6 text-sm">{`${JSON.parse(localStorage.likedVideos).length} video`}</p>
-				<div class="buttons flex gap-2 w-full font-semibold">
-					<button class="play-all flex-1 flex items-center gap-1 justify-center"
-						><Icon icon="material-symbols:play-arrow" class="text-2xl" />
-						<span>Riproduci tutto</span>
-					</button>
-					<button class="play-random flex-1 flex items-center gap-1 justify-center"
-						><Icon icon="ps:random" class="text-xl" />
-						<span>Casuale</span></button
-					>
+				<!-- info -->
+				<div class="info text-white">
+					<h1 class="py-3 text-2xl font-bold">Video piaciuti</h1>
+					<h2 class="py-1 text-sm">{$page.data.user.name}</h2>
+					<p class="pb-6 text-sm">{`${JSON.parse(localStorage.likedVideos).length} video`}</p>
+					<div class="buttons flex gap-2 w-full font-semibold">
+						<button class="play-all flex-1 flex items-center gap-1 justify-center"
+							><Icon icon="material-symbols:play-arrow" class="text-2xl" />
+							<span>Riproduci tutto</span>
+						</button>
+						<button class="play-random flex-1 flex items-center gap-1 justify-center"
+							><Icon icon="ps:random" class="text-xl" />
+							<span>Casuale</span></button
+						>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="right-cont basis-3/4">
-		<div class="index flex flex-col pt-5 justify-start w-fit">
-			{#each videos as video, i (video.id)}
-				<div
-					animate:flip={{ duration: 200 }}
-					draggable="true"
-					on:dragstart={(e) => {
-						dragStart(i, e);
-					}}
-					on:dragend={(e) => {
-						dragEnd(i, e);
-					}}
-					on:dragover={() => {
-						overDragId = i;
-					}}
-					class="cont-card border flex items-center grow-0 p-3 ms-1 hover:bg-slate-200 rounded-lg"
-				>
-					<span class="pe-4">{i + 1}</span>
-					<button
-						on:click={() => {
-							goto(`/playlist/${video.id}`);
+		<div class="right-cont basis-3/4">
+			<div class="index flex flex-col pt-5 justify-start w-fit">
+				{#each videos as video, i (video.id)}
+					<div
+						animate:flip={{ duration: 200 }}
+						draggable="true"
+						on:dragstart={(e) => {
+							dragStart(i, e);
 						}}
-						class="card cursor-pointer p-0 flex gap-2"
+						on:dragend={(e) => {
+							dragEnd(i, e);
+						}}
+						on:dragover|preventDefault={(e) => {
+							dragOver(i, e);
+						}}
+						on:drop={() => {
+							dragDrop();
+						}}
+						class="cont-card border flex items-center grow-0 p-3 ms-1 hover:bg-slate-200 rounded-lg"
 					>
-						<div class="thumb shrink-0">
-							<img
-								on:drop|preventDefault={() => {}}
-								draggable="false"
-								src={video?.snippet.thumbnails.standard.url}
-								alt={video?.snippet.title}
-								class="rounded-md object-cover aspect-video max-h-[100px]"
-							/>
-						</div>
-
-						<div class="description flex gap-3 text-gray-600 text-start w-full">
-							<div class="flex flex-col items-start w-full">
-								<h3 class="text-black font-semibold overflow-hidden max-h-[50px]">
-									{video.snippet.title}
-								</h3>
-								<button
-									on:click={(e) => {
-										e.stopPropagation();
-										goto(`/channel/${video.snippet.channelId}`);
-									}}
-									class="text-sm pt-3"
-								>
-									<p class="text-sm flex items-center gap-1 max-h-[50px] overflow-hidden">
-										<span>{video.snippet.channelTitle}</span>
-										<Icon icon="mdi:dot" />
-										<span
-											>{compactNumber(video.statistics.viewCount)
-												.toString()
-												.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} Visualizzazioni
-										</span>
-										<Icon icon="mdi:dot" />
-										<span>{daysBetween(video.snippet.publishedAt)}</span>
-									</p>
-								</button>
+						<span class="pe-4">{i + 1}</span>
+						<button
+							on:click={() => {
+								goto(`/video/${video.id}`);
+							}}
+							class="card cursor-pointer p-0 flex gap-2"
+						>
+							<div class="thumb shrink-0">
+								<img
+									on:drop|preventDefault={() => {}}
+									draggable="false"
+									src={video?.snippet.thumbnails.standard.url}
+									alt={video?.snippet.title}
+									class="rounded-md object-cover aspect-video max-h-[100px]"
+								/>
 							</div>
-						</div>
-					</button>
-				</div>
-			{/each}
+
+							<div class="description flex gap-3 text-gray-600 text-start w-full">
+								<div class="flex flex-col items-start w-full">
+									<h3 class="text-black font-semibold overflow-hidden max-h-[50px]">
+										{video.snippet.title}
+									</h3>
+									<button
+										on:click={(e) => {
+											e.stopPropagation();
+											goto(`/channel/${video.snippet.channelId}`);
+										}}
+										class="text-sm pt-3"
+									>
+										<p class="text-sm flex items-center gap-1 max-h-[50px] overflow-hidden">
+											<span>{video.snippet.channelTitle}</span>
+											<Icon icon="mdi:dot" />
+											<span
+												>{compactNumber(video.statistics.viewCount)
+													.toString()
+													.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} Visualizzazioni
+											</span>
+											<Icon icon="mdi:dot" />
+											<span>{daysBetween(video.snippet.publishedAt)}</span>
+										</p>
+									</button>
+								</div>
+							</div>
+						</button>
+					</div>
+				{/each}
+			</div>
 		</div>
 	</div>
-</div>
+{/if}
 
-<!-- {/if} -->
 <style>
 	.header {
 		background: linear-gradient(
