@@ -66,12 +66,12 @@
 		</section>
 
 		<!-- links -->
-		<div class="links">
+		<div class="links pb-3">
 			<h2 class="py-5 text-[16px]">Link</h2>
 			<ul class="text-[14px] grid grid-cols-2 gap-4">
 				{#each about.links as link}
 					<li>
-						<a href={link.url}>{link.title}</a>
+						<a class="text-blue-500" href={link.url}>{link.title}</a>
 					</li>
 				{/each}
 			</ul>

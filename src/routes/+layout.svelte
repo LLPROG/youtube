@@ -3,12 +3,13 @@
 	import Navbar from '$components/navbar/+page.svelte';
 	import Sidebar from '$components/sidebar/+page.svelte';
 	import { page } from '$app/stores';
+	import { beforeNavigate } from '$app/navigation';
 
 	$: login = $page.data.user;
 
 	// console.log($page.url.pathname.startsWith('/video'));
 	$: showSid = true;
-	let visible = false;
+	$: visible = false;
 
 	const showSidebar = () => {
 		document.body.scrollTo(0, 0);
@@ -22,9 +23,15 @@
 			}
 		} else {
 			showSid = !showSid;
-			visible = !visible;
 		}
+
+		console.log(visible)
+
 	};
+
+	beforeNavigate(()=>{
+		visible = false
+	});
 </script>
 
 {#if !$page.url.pathname.startsWith('/login')}
@@ -37,7 +44,7 @@
 				class="sidebar-video pt-1 absolute top-0 h-[100vh] bg-white z-50"
 				style:left={visible ? '0px' : '-250px'}
 			>
-				<Sidebar on:showSidebarVideo={showSidebar} showSidebarVideo={visible} />
+				<Sidebar showSidebarVideo={visible} on:showSidebarVideoFunction={showSidebar} />
 			</div>
 		{/if}
 

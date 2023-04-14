@@ -12,7 +12,7 @@
 	let channelSubscribes: String[] = [];
 	$: login = $page.data.user;
 	$: channelVideos = data.videosForChannel.items;
-	$: console.log(data.videosForChannel.items);
+	// $: console.log(data.videosForChannel.items);
 
 	// open menu for unsubscribe
 	const openMenu = (i: any) => {
@@ -26,32 +26,35 @@
 	// subscribe and unsubscribe functions
 	const subscribe = (channel: any) => {
 		channelSubscribes = [...channelSubscribes, channel.id];
-		console.log(channelSubscribes);
 		localStorage.subscribes = JSON.stringify(channelSubscribes);
+		// console.log(channelSubscribes);
 	};
 
 	const unSubscribe = (channel: any) => {
 		if (localStorage.subscribes) {
 			const index = channelSubscribes.indexOf(channel.id);
-			console.log(index);
 			channelSubscribes.splice(index, 1);
 			channelSubscribes = channelSubscribes;
-			console.log(channelSubscribes);
 			localStorage.subscribes = JSON.stringify(channelSubscribes);
+			// console.log(channelSubscribes);
 		}
 	};
 
 	onMount(() => {
 		if (localStorage.subscribes) {
 			channelSubscribes = [...JSON.parse(localStorage.subscribes)];
-			console.log(channelSubscribes, 'on mount');
-			console.log(localStorage.subscribes, 'on mount');
 		}
+
+		console.log(JSON.parse(localStorage.subscribes).length);
 	});
 </script>
 
 {#if login}
-	{#if data.videosForChannel.items}
+	{#if !localStorage.subscribes || JSON.parse(localStorage.subscribes).length === 0}
+		<div class="w-full flex justify-center pt-10">
+			<h1>Non sei iscritto a nessun canale</h1>
+		</div>
+	{:else}
 		<div class="sub-container pt-10 w-full flex flex-col justify-center items-center gap-10">
 			{#each channelVideos as channel, i}
 				<div class="sub-card flex items-center gap-2">
@@ -113,10 +116,6 @@
 					</div>
 				</div>
 			{/each}
-		</div>
-	{:else}
-		<div class="w-full flex justify-center pt-10">
-			<h1>Non sei iscritto a nessun canale</h1>
 		</div>
 	{/if}
 {:else}

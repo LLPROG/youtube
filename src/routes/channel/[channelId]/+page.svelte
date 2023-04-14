@@ -3,9 +3,13 @@
 	import { goto } from '$app/navigation';
 	import { compactNumber } from '$lib/global functions/compactNumer';
 	import { daysBetween } from '$lib/global functions/days_between';
+	import { onMount } from 'svelte';
 	export let data: PageData;
 	$: videos = data.videosChannel.items;
 	// console.log(data);
+	onMount(() => {
+		document.body.scrollTo(0, 0);
+	});
 </script>
 
 <div class="index flex flex-wrap px-10 justify-start w-fit">

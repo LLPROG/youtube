@@ -1,6 +1,6 @@
 {
     "editor.fontSize": 18,
-    "window.zoomLevel": -2,
+    "window.zoomLevel": -1,
     "workbench.activityBar.visible": true,
     "workbench.statusBar.visible": false,
     "editor.hover.enabled": false,

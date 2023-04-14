@@ -60,7 +60,7 @@
 		</div>
 
 		<!-- content -->
-		<div class="details-channel border">
+		<div class="details-channel">
 			<!-- info and statistics -->
 			<div class="sub-card flex items-center justify-start gap-2 px-10 pt-10">
 				<!-- img thumb of channel -->
@@ -167,7 +167,7 @@
 			</nav>
 
 			<!-- sections -->
-			<div class="border content">
+			<div class="content">
 				<div class="page-content">
 					<slot />
 				</div>

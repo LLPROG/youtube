@@ -11,33 +11,16 @@
 	export let data: PageData;
 
 	$: login = $page.data.user;
-	let mounted;
 	let prevPage: any = '';
 	let openBannerBoolSub: Boolean = false;
 	let openBannerBoolLike: Boolean = false;
 	let openBannerBoolDislike: Boolean = false;
 	let focused: Boolean = false;
+	let focusedModify: Boolean = false;
 	let textComment = '';
+	let textCommentModify = '';
 	let comments: any;
 	let likedVideosRes: any;
-	// $: console.log(comments);
-
-	$: iframe = data.video.items[0].player.embedHtml.replace(
-		'width="480" height="270"',
-		'style="aspect-ratio: 16 / 9;" width="100%" height="auto"'
-	);
-	$: relatedVideos = data.videosByIds.items;
-	$: video = data.video.items[0];
-	$: channel = data.channel.items[0];
-	$: comments = data.comments.items;
-	$: colorLikeBool = false;
-
-	$: likedVideosRes = data.likedVideos.items;
-	// $: console.log(comments[0].snippet.topLevelComment.snippet);
-	// $: console.log((data.numberComments = 40));
-	// $: console.log(data.numberComments);
-	// $: console.log(iframe);
-
 	let stringWithLinks = '';
 	let numberComments = 20;
 
@@ -47,11 +30,37 @@
 	let counterLikedVideo: number;
 	let likedVideos: string[] = [];
 	let channelSubscribes: String[] = [];
+	let hover = false;
+	let showMenuComment = false;
+	let modifyCommentBool = false;
+	let comment: any;
+	// $: console.log(comments);
 
-	// add new object to comments
+	$: iframe = data.video.items[0].player.embedHtml
+		.replace(
+			'width="480" height="270"',
+			'style="aspect-ratio: 16 / 9;" width="100%" height="auto" min-height="500px"'
+		)
+		.replace('" frameborder="0"', '?autoplay=1" frameborder="0"');
+
+	$: relatedVideos = data.videosByIds.items;
+	$: video = data.video.items[0];
+	$: channel = data.channel.items[0];
+	$: comments = data.comments.items;
+	$: colorLikeBool = false;
+
+	if (data.likedVideos) {
+		likedVideosRes = data.likedVideos.items;
+	}
+	// $: console.log(comments[0].snippet.topLevelComment.snippet);
+	// $: console.log((data.numberComments = 40));
+	// $: console.log(data.numberComments);
+	$: console.log(iframe);
+
+	// add, modify and delete comments functions
 	const addComment = () => {
-		let comment = {
-			id: 'UgwJQ2D1QPSh83FESfZ4AaABAg',
+		comment = {
+			id: 'myid',
 			snippet: {
 				topLevelComment: {
 					snippet: {
@@ -72,9 +81,31 @@
 			console.log(comments);
 		}
 		comments = comments;
-
 		textComment = '';
+		textCommentModify = '';
+		focused = false;
+		modifyCommentBool = false;
 	};
+
+	const modifyComment = () => {
+		textComment = textCommentModify;
+		console.log(comment);
+		comments.splice(comments.indexOf(comment), 1);
+		addComment();
+		modifyCommentBool = false;
+		showMenuComment = false;
+		console.log(modifyCommentBool);
+		console.log(showMenuComment);
+	};
+
+	const deleteComment = () => {
+		comments.splice(comments.indexOf(comment), 1);
+		comments = comments;
+		modifyCommentBool = false;
+		showMenuComment = false;
+	};
+
+	// --------------- >
 
 	// close banner menus when click outside
 	function handleMenuClose() {
@@ -130,10 +161,7 @@
 
 	// infiniti scroll comments function
 	const handleScroll = async () => {
-		console.log(window.innerHeight + window.scrollY);
-		console.log(document.body.offsetHeight);
-
-		if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+		if (document.body.scrollTop + document.body.offsetHeight >= document.body.scrollHeight) {
 			numberComments += 20;
 			const commentsRes = await fetch(
 				`https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet&maxResults=${numberComments}&videoId=${video.id}&textFormat=html&key=${auth}`,
@@ -167,7 +195,6 @@
 	};
 
 	onMount(async () => {
-		mounted = true;
 		if (localStorage.subscribes) {
 			channelSubscribes = [...JSON.parse(localStorage.subscribes)];
 		}
@@ -188,17 +215,16 @@
 		infoDropStyle();
 
 		// infiniti scroll comments function
-		if ($page.url.pathname.startsWith('/video')) {
-			console.log('video');
-			document.body.addEventListener('scroll', handleScroll);
-		}
+		// console.log('video');
+		document.body.addEventListener('scroll', handleScroll);
 
 		//--------------------------
 		const inputString = video.snippet.description;
 		stringWithLinks = insertStringWithLinks(inputString);
 	});
 
-	afterNavigate(() => {
+	afterNavigate(({ from }) => {
+		prevPage = from?.url.pathname;
 		counterLikedVideo = +video.statistics.likeCount;
 		if (localStorage.likedVideos) {
 			likedVideos = [...JSON.parse(localStorage.likedVideos)];
@@ -217,7 +243,11 @@
 <div class="flex w-full px-[24px] pt-5">
 	<div class="video-cont basis-4/6">
 		<!-- player -->
-		<div class="iframe-cont" contenteditable="true" bind:innerHTML={iframe} />
+		<div
+			class="iframe-cont w-full min-h-[500px] aspect-auto"
+			contenteditable="true"
+			bind:innerHTML={iframe}
+		/>
 
 		<!-- info details -->
 		<div class="info-video">
@@ -227,13 +257,8 @@
 			<!-- details -->
 			<div class="details flex items-center justify-between pt-3">
 				<!-- left cont details -->
-				<div class="left-det flex gap-3 items-center">
-					<img
-						src={channel?.snippet.thumbnails.default?.url ||
-							channel?.snippet.thumbnails.standard?.url}
-						alt=""
-						class="rounded-full w-10"
-					/>
+				<div class="left-det flex gap-3 items-center w-full">
+					<img src={channel?.snippet.thumbnails.standard?.url} alt="" class="rounded-full w-10" />
 					<div class="channel">
 						<button
 							on:click={(e) => {
@@ -427,7 +452,7 @@
 				</div>
 			</div>
 
-			<div class="add-comments">
+			<div class="add-comments pb-4">
 				{#if login}
 					<div class="user-inner-comment flex items-start gap-4">
 						<div
@@ -441,7 +466,7 @@
 								on:focus={() => {
 									focused = true;
 								}}
-								class="focus:outline-none border-b-[1px] w-full -z-10"
+								class="focus:outline-none border-b-[1px] w-full z-10"
 								type="text"
 								placeholder="Aggiungi un commento..."
 							/>
@@ -473,7 +498,7 @@
 						on:click={() => {
 							goto('/login');
 						}}
-						class="border flex items-center gap-2"
+						class="flex items-center gap-2"
 					>
 						<div
 							class="thumb text-blue-600 border overflow-hidden border-blue-600 w-12 h-12 flex justify-center items-center rounded-full text-5xl"
@@ -488,7 +513,20 @@
 			<div class="comments-listn flex flex-col gap-5 mt-4">
 				{#if comments}
 					{#each comments as comment}
-						<div class="comment-cont flex gap-5">
+						<div
+							on:focus={() => {}}
+							on:mouseover={() => {
+								if (comment.id === 'myid') {
+									hover = true;
+								}
+							}}
+							on:mouseleave={() => {
+								if (comment.id === 'myid' && showMenuComment == false) {
+									hover = false;
+								}
+							}}
+							class="comment-cont flex gap-5"
+						>
 							<div class="user-thum shrink-0 w-12 h-12">
 								{#if comment.snippet.topLevelComment.snippet?.authorProfileImageUrl == 'user'}
 									<div
@@ -504,21 +542,136 @@
 									/>
 								{/if}
 							</div>
-							<div class="comment-details flex flex-col gap-1">
-								<p class="flex items-center gap-3">
-									<span class="user font-bold"
-										>{comment.snippet.topLevelComment.snippet.authorDisplayName}</span
-									><span>{daysBetween(comment.snippet.topLevelComment.snippet.publishedAt)}</span>
-								</p>
-								<p>{comment.snippet.topLevelComment.snippet.textOriginal}</p>
-								<div class="buttons-like-unlike flex">
-									<button class="like flex items-center gap-1" style:padding="5px"
-										><Icon icon="mdi:like-outline" />{comment.snippet.topLevelComment.snippet
-											.likeCount}</button
-									>
-									<button class="dislike px-2"><Icon icon="mdi:dislike-outline" /></button>
+
+							<!-- comment-details -->
+							{#if comment.id === 'myid'}
+								<div class="w-full">
+									<!-- ------------------------------------------ -->
+
+									{#if modifyCommentBool}
+										<div class="user-inner-comment flex items-start gap-4 bg-white w-full">
+											<div class="w-full flex flex-col gap-2 relative">
+												<input
+													bind:value={textCommentModify}
+													on:focus={() => {
+														focusedModify = true;
+													}}
+													class="focus:outline-none border-b-[1px] w-full z-10"
+													type="text"
+													placeholder="Aggiungi un commento..."
+												/>
+												<div
+													class="line absolute top-6 border-b-2 border-black origin-center transition-[.5s] w-full"
+													style:transform={focusedModify ? 'scale(1)' : 'scale(0)'}
+												/>
+												<div
+													style:height={focusedModify ? '100%' : '0'}
+													class="buttons flex pt-2 justify-end gap-2 overflow-hidden"
+												>
+													<button
+														on:click={() => {
+															modifyCommentBool = false;
+														}}
+														class="hover:bg-gray-300 py-2 px-3 rounded-3xl"
+														>Annulla
+													</button>
+													<button
+														disabled={textCommentModify === ''}
+														on:click={modifyComment}
+														class="hover:bg-[#065fd4] bg-[#065ff9] text-white py-2 px-3 rounded-3xl disabled:opacity-50"
+														>Salva
+													</button>
+												</div>
+											</div>
+										</div>
+									{:else}
+										<div class="comment-details flex flex-col gap-1">
+											<p class="flex items-center gap-3">
+												<span class="user font-bold"
+													>{comment.snippet.topLevelComment.snippet.authorDisplayName}</span
+												><span
+													>{daysBetween(comment.snippet.topLevelComment.snippet.publishedAt)}</span
+												>
+											</p>
+											<p contenteditable="false">
+												{comment.snippet.topLevelComment.snippet.textOriginal}
+											</p>
+											<div class="buttons-like-unlike flex">
+												<button class="like flex items-center gap-1" style:padding="5px"
+													><Icon icon="mdi:like-outline" />{comment.snippet.topLevelComment.snippet
+														.likeCount}</button
+												>
+												<button class="dislike px-2"><Icon icon="mdi:dislike-outline" /></button>
+											</div>
+										</div>
+									{/if}
 								</div>
-							</div>
+							{:else}
+								<div class="comment-details flex flex-col gap-1">
+									<p class="flex items-center gap-3">
+										<span class="user font-bold"
+											>{comment.snippet.topLevelComment.snippet.authorDisplayName}</span
+										><span>{daysBetween(comment.snippet.topLevelComment.snippet.publishedAt)}</span>
+									</p>
+									{#if comment.id === 'myid'}
+										<p
+											bind:innerHTML={comment.snippet.topLevelComment.snippet.textOriginal}
+											contenteditable="true"
+										/>
+									{:else}
+										<p contenteditable="false">
+											{comment.snippet.topLevelComment.snippet.textOriginal}
+										</p>
+									{/if}
+									<div class="buttons-like-unlike flex">
+										<button class="like flex items-center gap-1" style:padding="5px"
+											><Icon icon="mdi:like-outline" />{comment.snippet.topLevelComment.snippet
+												.likeCount}</button
+										>
+										<button class="dislike px-2"><Icon icon="mdi:dislike-outline" /></button>
+									</div>
+								</div>
+							{/if}
+
+							{#if comment.id === 'myid' && hover && modifyCommentBool == false}
+								<div class="ms-auto relative">
+									<button
+										on:click={() => {
+											showMenuComment = !showMenuComment;
+										}}
+									>
+										<Icon icon="mdi:dots-vertical" class="text-xl" />
+									</button>
+									<ul
+										class="py-3 rounded-xl border absolute top-5 left-0 bg-white"
+										style:display={showMenuComment ? 'block' : 'none'}
+									>
+										<li>
+											<button
+												on:click={() => {
+													modifyCommentBool = true;
+													showMenuComment = false;
+												}}
+												class="px-5 py-2 flex items-center gap-3 hover:bg-gray-400 w-full"
+												><Icon
+													icon="streamline:interface-edit-pencil-change-edit-modify-pencil-write-writing"
+													class="text-xl"
+												/><span>Modifica</span></button
+											>
+										</li>
+										<li>
+											<button
+												on:click={deleteComment}
+												class="px-5 py-2 flex items-center gap-3 hover:bg-gray-400 w-full"
+												><Icon
+													icon="material-symbols:delete-outline-rounded"
+													class="text-xl"
+												/><span>Elimina</span></button
+											>
+										</li>
+									</ul>
+								</div>
+							{/if}
 						</div>
 					{/each}
 				{/if}
@@ -526,57 +679,104 @@
 		</div>
 	</div>
 
-	{#if prevPage === '/likedVideo'}
-		<!-- right-bar video piaciuti  -->
-		<div class="right-bar basis-2/6 ps-[24px] flex flex-col gap-4 min-w-[300px]">
-			{#each likedVideosRes as likedVideo}
-				<a
-					href={`/video/${likedVideo.snippet.id}`}
-					data-sveltekit-reload
-					class="video-cont text-start flex gap-2 text-black"
-				>
-					<div class="video-thumb shrink-0 grow-0">
-						<img
-							class="object-cover aspect-video max-w-[168px] rounded-lg"
-							src={likedVideo.snippet.thumbnails.standard.url}
-							alt=""
-						/>
-					</div>
-					<div class="video-info">
-						<h1
-							class="font-semibold text-[14px] overflow-hidden w-full max-h-12 text-ellipsis line-clamp-2"
-						>
-							{likedVideo.snippet.title}
-						</h1>
+	<!-- right-bar-->
+	<div class="right-bar basis-2/6 ps-[24px] flex flex-col gap-4 min-w-[300px]">
+		{#if (prevPage && prevPage === '/likedVideo') || likedVideos.includes(video.id)}
+			<!-- playlist video piaciuti  -->
+			<div class="border p-5 rounded-xl max-h-[500px] overflow-y-scroll flex flex-col gap-4">
+				<div>
+					<h1 class="font-bold text-xl">Video piaciuti</h1>
+					<p>
+						<span>{$page.data.user.name} - </span>
+						<span>{`${likedVideos.indexOf(video.id) + 1} / ${likedVideos.length}`}</span>
+					</p>
+
+					<div class="buttons text-3xl">
 						<button
-							on:click={(e) => {
-								e.stopPropagation();
-								goto(`/channel/${likedVideo.snippet.channelId}`, {
-									noScroll: false
-								});
-							}}
-							class="mt-2 channel text-left text-[12px] overflow-hidden w-full text-[#606060] text-ellipsis line-clamp-1"
+							on:click={() => {
+								if (likedVideos.indexOf(video.id) === 0) {
+									goto(`/video/${likedVideos[likedVideos.length - 1]}`, {
+										replaceState: true,
+										invalidateAll: false
+									});
+								} else {
+									goto(`/video/${likedVideos[likedVideos.indexOf(video.id) - 1]}`, {
+										replaceState: true,
+										invalidateAll: false
+									});
+								}
+							}}><Icon icon="material-symbols:skip-previous-rounded" /></button
 						>
-							{likedVideo.snippet.channelTitle}
-						</button>
-						<div class="view-publiched flex gap-1 text-[12px] text-[#606060]">
-							<span class="shrink-0"
-								>{`${compactNumber(+likedVideo.statistics.viewCount)
-									.toString()
-									.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} visualizzazioni`}
-							</span>
-							<Icon icon="mdi:dot" />
-							<span class="overflow-hidden w-full text-ellipsis line-clamp-1">
-								{daysBetween(likedVideo.snippet.publishedAt)}
-							</span>
-						</div>
+						<button
+							on:click={() => {
+								if (likedVideos.indexOf(video.id) === likedVideos.length - 1) {
+									goto(`/video/${likedVideos[0]}`, {
+										replaceState: true,
+										invalidateAll: false
+									});
+								} else {
+									goto(`/video/${likedVideos[likedVideos.indexOf(video.id) + 1]}`, {
+										replaceState: true,
+										invalidateAll: false
+									});
+								}
+							}}><Icon icon="material-symbols:skip-next-rounded" /></button
+						>
 					</div>
-				</a>
-			{/each}
-		</div>
-	{:else}
-		<!-- right-bar video correlati  -->
-		<div class="right-bar basis-2/6 ps-[24px] flex flex-col gap-4 min-w-[300px]">
+				</div>
+
+				{#each likedVideosRes as likedVideo}
+					<button
+						on:click={() => {
+							goto(`/video/${likedVideo.id}`, {
+								replaceState: true,
+								invalidateAll: false
+							});
+						}}
+						class="video-cont text-start flex gap-2 text-black"
+					>
+						<div class="video-thumb shrink-0 grow-0">
+							<img
+								class="object-cover aspect-video max-w-[128px] rounded-lg"
+								src={likedVideo.snippet.thumbnails.standard.url}
+								alt=""
+							/>
+						</div>
+						<div class="video-info">
+							<h1
+								class="font-semibold text-[14px] overflow-hidden w-full max-h-12 text-ellipsis line-clamp-2"
+							>
+								{likedVideo.snippet.title}
+							</h1>
+							<button
+								on:click={(e) => {
+									e.stopPropagation();
+									goto(`/channel/${likedVideo.snippet.channelId}`, {
+										noScroll: false
+									});
+								}}
+								class="mt-2 channel text-left text-[12px] overflow-hidden w-full text-[#606060] text-ellipsis line-clamp-1"
+							>
+								{likedVideo.snippet.channelTitle}
+							</button>
+							<div class="view-publiched flex gap-1 text-[12px] text-[#606060]">
+								<span class="shrink-0"
+									>{`${compactNumber(+likedVideo.statistics.viewCount)
+										.toString()
+										.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} visualizzazioni`}
+								</span>
+								<Icon icon="mdi:dot" />
+								<span class="overflow-hidden w-full text-ellipsis line-clamp-1">
+									{daysBetween(likedVideo.snippet.publishedAt)}
+								</span>
+							</div>
+						</div>
+					</button>
+				{/each}
+			</div>
+		{/if}
+		<!-- video correlati   -->
+		<div class="flex flex-col gap-4">
 			{#each relatedVideos as RelatedVideo}
 				<button
 					on:click={() => {
@@ -626,7 +826,7 @@
 				</button>
 			{/each}
 		</div>
-	{/if}
+	</div>
 </div>
 
 <style>

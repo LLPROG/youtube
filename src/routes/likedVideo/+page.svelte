@@ -1,11 +1,12 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import { page } from '$app/stores';
-	import { goto, beforeNavigate } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { compactNumber } from '$lib/global functions/compactNumer';
 	import { daysBetween } from '$lib/global functions/days_between';
 	import type { PageData } from './$types';
 	import { flip } from 'svelte/animate';
+	import { onMount } from 'svelte';
 
 	export let data: PageData;
 	let videos: any[];
@@ -20,11 +21,9 @@
 	if (localStorage.likedVideos) {
 		likedVideos = [...JSON.parse(localStorage.likedVideos)];
 	}
-
-	beforeNavigate(({ from }) => {
-		console.log(from?.url.pathname);
-	});
 	// $: console.log(videos.length);
+
+	// drag and drop functions
 
 	function array_move(arr: any, old_index: any, new_index: any) {
 		if (new_index >= arr.length) {
@@ -59,27 +58,33 @@
 	function dragDrop() {
 		console.log('drop');
 		array_move(videos, startDragId, overDragId);
-		// array_move(videos, i, overDragId);
 		array_move(likedVideos, startDragId, overDragId);
 		localStorage.likedVideos = JSON.stringify(likedVideos);
 		videos = videos;
 	}
+
+	// ------------------------------->
+
+	onMount(() => {
+		console.log(JSON.parse(localStorage.likedVideos).length);
+	});
 </script>
 
-{#if !localStorage.likedVideos}
+{#if !localStorage.likedVideos || JSON.parse(localStorage.likedVideos).length === 0}
 	<div class="flex justify-center pt-10">
 		<p>Non sono presenti video</p>
 	</div>
 {:else}
 	<div class="container flex pt-10 ps-16">
-		<div class="left-cont basis-1/4 shrink-0 min-w-[370px] ">
+		<!-- left fix cont -->
+		<div class="left-cont basis-1/4 shrink-0 min-w-[370px] fixed">
 			<div class="header border h-[85vh] rounded-2xl p-6 bg-slate-300">
 				<!-- play all videos -->
 				<div class="play-all-videos w-full h-60 flex items-center justify-center">
 					<div class="phone-card bg-black h-[100%] rounded-xl aspect-[9/16] flex items-center">
 						<img
-							src={videos[0].snippet.thumbnails.standard.url}
-							alt={videos[0].snippet.title}
+							src={videos[0]?.snippet.thumbnails.standard.url}
+							alt={videos[0]?.snippet.title}
 							class="rounded-md object-cover aspect-[9/16]"
 						/>
 					</div>
@@ -91,7 +96,11 @@
 					<h2 class="py-1 text-sm">{$page.data.user.name}</h2>
 					<p class="pb-6 text-sm">{`${JSON.parse(localStorage.likedVideos).length} video`}</p>
 					<div class="buttons flex gap-2 w-full font-semibold">
-						<button class="play-all flex-1 flex items-center gap-1 justify-center"
+						<button
+							on:click={() => {
+								goto(`/video/${videos[0].id}`);
+							}}
+							class="play-all flex-1 flex items-center gap-1 justify-center"
 							><Icon icon="material-symbols:play-arrow" class="text-2xl" />
 							<span>Riproduci tutto</span>
 						</button>
@@ -104,7 +113,8 @@
 			</div>
 		</div>
 
-		<div class="right-cont basis-3/4">
+		<!-- right scrollable cont -->
+		<div class="right-cont ms-[370px] basis-3/4">
 			<div class="index flex flex-col pt-5 justify-start w-fit">
 				{#each videos as video, i (video.id)}
 					<div
@@ -119,10 +129,10 @@
 						on:dragover|preventDefault={(e) => {
 							dragOver(i, e);
 						}}
-						on:drop={() => {
+						on:drop|preventDefault={() => {
 							dragDrop();
 						}}
-						class="cont-card border flex items-center grow-0 p-3 ms-1 hover:bg-slate-200 rounded-lg"
+						class="cont-card flex items-center grow-0 p-3 ms-1 hover:bg-slate-200 rounded-lg"
 					>
 						<span class="pe-4">{i + 1}</span>
 						<button
