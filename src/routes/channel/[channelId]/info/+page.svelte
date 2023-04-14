@@ -48,17 +48,17 @@
 	};
 </script>
 
-<div class="about flex px-20 pt-10">
+<div class="flex px-20 pt-10">
 	<!-- info about -->
-	<div class="info-section basis-3/4 flex flex-col gap-3 pe-40">
+	<div class="basis-3/4 flex flex-col gap-3 pe-40">
 		<!-- descrizione -->
-		<section class="desc border-b-2 pb-5">
+		<section class="border-b-2 pb-5">
 			<h2 class="py-5 text-[16px]">Descrizione</h2>
 			<p class="text-[14px]">{about.description}</p>
 		</section>
 
 		<!-- dettagli -->
-		<section class="details border-b-2 pb-5">
+		<section class="border-b-2 pb-5">
 			<h2 class="py-5 text-[16px]">Dettagli</h2>
 			<p class="text-[14px] flex items-center gap-3">
 				<span>Localita:</span>{about.details.location}<span />
@@ -66,7 +66,7 @@
 		</section>
 
 		<!-- links -->
-		<div class="links pb-3">
+		<div class="pb-3">
 			<h2 class="py-5 text-[16px]">Link</h2>
 			<ul class="text-[14px] grid grid-cols-2 gap-4">
 				{#each about.links as link}
@@ -79,7 +79,7 @@
 	</div>
 
 	<!-- statistics -->
-	<div class="statistics basis-1/4">
+	<div class="basis-1/4">
 		<h3 class="py-5 text-[16px] border-b-2">Statistiche</h3>
 		<p class="py-3 text-[16px] border-b-2">
 			<span>Data iscrizione:</span><span>{italianTimeFormat(channel.snippet.publishedAt)}</span>

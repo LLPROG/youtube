@@ -55,17 +55,17 @@
 			<h1>Non sei iscritto a nessun canale</h1>
 		</div>
 	{:else}
-		<div class="sub-container pt-10 w-full flex flex-col justify-center items-center gap-10">
+		<div class="pt-10 w-full flex flex-col justify-center items-center gap-10">
 			{#each channelVideos as channel, i}
-				<div class="sub-card flex items-center gap-2">
+				<div class="flex items-center gap-2">
 					<div class="shrink-0 px-10 w-80 flex items-center justify-center">
 						<img
 							src={channel.snippet.thumbnails.default?.url}
 							alt={channel.snippet.title}
-							class="thumb rounded-full w-[50%]"
+							class="rounded-full w-[50%]"
 						/>
 					</div>
-					<div class="info w-96 max-h-[136px] overflow-hidden">
+					<div class="w-96 max-h-[136px] overflow-hidden">
 						<h1 class="text-[18px] font-semibold">{channel.snippet.title}</h1>
 						<p class="pt-2 flex text-[12px] text-[#606060]">
 							<span class="shrink-0"
@@ -121,7 +121,7 @@
 {:else}
 	<div class="flex justify-center items-center w-full">
 		<div class="flex flex-col gap-5 items-center pt-[140px]">
-			<div class="sve-cont w-[120px]">
+			<div class="w-[120px]">
 				<svg
 					viewBox="0 0 24 24"
 					preserveAspectRatio="xMidYMid meet"
@@ -129,10 +129,9 @@
 					class="style-scope yt-icon"
 					style="pointer-events: none; display: block; width: 100%; height: 100%;"
 				>
-					<g class="style-scope yt-icon"
+					<g
 						><path
 							d="M10,18v-6l5,3L10,18z M17,3H7v1h10V3z M20,6H4v1h16V6z M22,9H2v12h20V9z M3,10h18v10H3V10z"
-							class="style-scope yt-icon"
 						/></g
 					>
 				</svg>
@@ -142,7 +141,7 @@
 				Accedi per vedere gli aggiornamenti dei tuoi canali preferiti di YouTube
 			</p>
 			<div
-				class="login flex items-center gap-2 px-2 py-[3px] rounded-s-3xl rounded-e-3xl border text-blue-600 border-blue-600"
+				class="flex items-center gap-2 px-2 py-[3px] rounded-s-3xl rounded-e-3xl border text-blue-600 border-blue-600"
 			>
 				<Icon icon="ic:outline-account-circle" />
 				<button

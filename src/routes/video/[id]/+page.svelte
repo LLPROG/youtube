@@ -680,7 +680,7 @@
 	</div>
 
 	<!-- right-bar-->
-	<div class="right-bar basis-2/6 ps-[24px] flex flex-col gap-4 min-w-[300px]">
+	<div class="basis-2/6 ps-[24px] flex flex-col gap-4 min-w-[300px]">
 		{#if (prevPage && prevPage === '/likedVideo') || likedVideos.includes(video.id)}
 			<!-- playlist video piaciuti  -->
 			<div class="border p-5 rounded-xl max-h-[500px] overflow-y-scroll flex flex-col gap-4">
@@ -691,7 +691,7 @@
 						<span>{`${likedVideos.indexOf(video.id) + 1} / ${likedVideos.length}`}</span>
 					</p>
 
-					<div class="buttons text-3xl">
+					<div class="text-3xl">
 						<button
 							on:click={() => {
 								if (likedVideos.indexOf(video.id) === 0) {
@@ -733,16 +733,16 @@
 								invalidateAll: false
 							});
 						}}
-						class="video-cont text-start flex gap-2 text-black"
+						class="text-start flex gap-2 text-black"
 					>
-						<div class="video-thumb shrink-0 grow-0">
+						<div class="shrink-0 grow-0">
 							<img
 								class="object-cover aspect-video max-w-[128px] rounded-lg"
 								src={likedVideo.snippet.thumbnails.standard.url}
 								alt=""
 							/>
 						</div>
-						<div class="video-info">
+						<div>
 							<h1
 								class="font-semibold text-[14px] overflow-hidden w-full max-h-12 text-ellipsis line-clamp-2"
 							>
@@ -755,11 +755,11 @@
 										noScroll: false
 									});
 								}}
-								class="mt-2 channel text-left text-[12px] overflow-hidden w-full text-[#606060] text-ellipsis line-clamp-1"
+								class="mt-2 text-left text-[12px] overflow-hidden w-full text-[#606060] text-ellipsis line-clamp-1"
 							>
 								{likedVideo.snippet.channelTitle}
 							</button>
-							<div class="view-publiched flex gap-1 text-[12px] text-[#606060]">
+							<div class="flex gap-1 text-[12px] text-[#606060]">
 								<span class="shrink-0"
 									>{`${compactNumber(+likedVideo.statistics.viewCount)
 										.toString()
@@ -785,16 +785,16 @@
 							invalidateAll: false
 						});
 					}}
-					class="video-cont text-start flex gap-2 text-black"
+					class="text-start flex gap-2 text-black"
 				>
-					<div class="video-thumb shrink-0 grow-0">
+					<div class="shrink-0 grow-0">
 						<img
 							class="object-cover aspect-video max-w-[168px] rounded-lg"
 							src={RelatedVideo.snippet.thumbnails.standard?.url}
 							alt=""
 						/>
 					</div>
-					<div class="video-info">
+					<div>
 						<h1
 							class="font-semibold text-[14px] overflow-hidden w-full max-h-12 text-ellipsis line-clamp-2"
 						>
@@ -807,11 +807,11 @@
 									replaceState: true
 								});
 							}}
-							class="mt-2 channel text-left text-[12px] overflow-hidden w-full text-[#606060] text-ellipsis line-clamp-1"
+							class="mt-2 text-left text-[12px] overflow-hidden w-full text-[#606060] text-ellipsis line-clamp-1"
 						>
 							{RelatedVideo.snippet.channelTitle}
 						</button>
-						<div class="view-publiched flex gap-1 text-[12px] text-[#606060]">
+						<div class="flex gap-1 text-[12px] text-[#606060]">
 							<span class="shrink-0"
 								>{`${compactNumber(+RelatedVideo.statistics.viewCount)
 									.toString()

@@ -130,15 +130,15 @@
 						<!-- menu login -->
 						<ul
 							style:visibility={showMenuLogin ? 'visible' : 'hidden'}
-							class="absolute z-10 text-black right-1 top-14 border bg-amber-100"
+							class="absolute z-10 text-black right-1 top-14 border bg-white min-w-[200px] rounded-xl"
 						>
-							<li class="info-cont border-b-2 flex items-start gap-2 px-4 py-2">
+							<li class="info-cont border-b-2 flex items-center gap-3 px-4 py-2">
 								<div
-									class="account border rounded-full w-8 h-8  flex justify-center items-center bg-violet-600 text-white"
+									class="account border rounded-full w-8 h-8 flex justify-center items-start bg-violet-600 text-white"
 								>
 									L
 								</div>
-								<div class="info flex flex-col justify-start">
+								<div class="info flex flex-col justify-start ps-3 text-start">
 									<p>User</p>
 									<p>Email</p>
 								</div>

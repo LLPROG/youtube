@@ -75,12 +75,12 @@
 		<p>Non sono presenti video</p>
 	</div>
 {:else}
-	<div class="container flex pt-10 ps-16">
+	<div class="flex pt-10 ps-16">
 		<!-- left fix cont -->
-		<div class="left-cont basis-1/4 shrink-0 min-w-[370px] fixed">
+		<div class="basis-1/4 shrink-0 min-w-[370px] fixed">
 			<div class="header border h-[85vh] rounded-2xl p-6 bg-slate-300">
 				<!-- play all videos -->
-				<div class="play-all-videos w-full h-60 flex items-center justify-center">
+				<div class="w-full h-60 flex items-center justify-center">
 					<div class="phone-card bg-black h-[100%] rounded-xl aspect-[9/16] flex items-center">
 						<img
 							src={videos[0]?.snippet.thumbnails.standard.url}
@@ -91,7 +91,7 @@
 				</div>
 
 				<!-- info -->
-				<div class="info text-white">
+				<div class="text-white">
 					<h1 class="py-3 text-2xl font-bold">Video piaciuti</h1>
 					<h2 class="py-1 text-sm">{$page.data.user.name}</h2>
 					<p class="pb-6 text-sm">{`${JSON.parse(localStorage.likedVideos).length} video`}</p>
@@ -114,7 +114,7 @@
 		</div>
 
 		<!-- right scrollable cont -->
-		<div class="right-cont ms-[370px] basis-3/4">
+		<div class="ms-[370px] basis-3/4">
 			<div class="index flex flex-col pt-5 justify-start w-fit">
 				{#each videos as video, i (video.id)}
 					<div
@@ -132,16 +132,16 @@
 						on:drop|preventDefault={() => {
 							dragDrop();
 						}}
-						class="cont-card flex items-center grow-0 p-3 ms-1 hover:bg-slate-200 rounded-lg"
+						class="flex items-center grow-0 p-3 ms-1 hover:bg-slate-200 rounded-lg"
 					>
 						<span class="pe-4">{i + 1}</span>
 						<button
 							on:click={() => {
 								goto(`/video/${video.id}`);
 							}}
-							class="card cursor-pointer p-0 flex gap-2"
+							class="cursor-pointer p-0 flex gap-2"
 						>
-							<div class="thumb shrink-0">
+							<div class="shrink-0">
 								<img
 									on:drop|preventDefault={() => {}}
 									draggable="false"
@@ -151,7 +151,7 @@
 								/>
 							</div>
 
-							<div class="description flex gap-3 text-gray-600 text-start w-full">
+							<div class="flex gap-3 text-gray-600 text-start w-full">
 								<div class="flex flex-col items-start w-full">
 									<h3 class="text-black font-semibold overflow-hidden max-h-[50px]">
 										{video.snippet.title}

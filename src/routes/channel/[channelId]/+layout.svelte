@@ -49,31 +49,27 @@
 {#await channel}
 	<p>loading...</p>
 {:then value}
-	<div class="channel">
+	<div>
 		<!-- hero -->
-		<div class="hero w-full min-h-[200px] bg-black flex items-center justify-center p-3">
+		<div class="w-full min-h-[200px] bg-black flex items-center justify-center p-3">
 			<img
 				src={channel.snippet.thumbnails.medium?.url || channel.snippet.thumbnails.default?.url}
 				alt=""
-				class="hero-img rounded-full"
+				class="rounded-full"
 			/>
 		</div>
 
 		<!-- content -->
-		<div class="details-channel">
+		<div>
 			<!-- info and statistics -->
-			<div class="sub-card flex items-center justify-start gap-2 px-10 pt-10">
+			<div class="flex items-center justify-start gap-2 px-10 pt-10">
 				<!-- img thumb of channel -->
 				<div class="shrink-0 px-10 w-100 flex items-center justify-center">
-					<img
-						src={channel.snippet.thumbnails.medium.url}
-						alt=""
-						class="thumb rounded-full w-[80%]"
-					/>
+					<img src={channel.snippet.thumbnails.medium.url} alt="" class="rounded-full w-[80%]" />
 				</div>
 
 				<!-- info channel -->
-				<div class="info w-96 max-h-[136px] overflow-hidden">
+				<div class="w-96 max-h-[136px] overflow-hidden">
 					<h1 class="text-[24px] font-semibold">{channel.snippet.title}</h1>
 					<p class="pt-2 flex items-center gap-2 text-[15px] text-[#606060]">
 						<span class="text-black">{channel.snippet.customUrl}</span>
@@ -132,7 +128,7 @@
 			</div>
 
 			<!-- navbar -->
-			<nav class="navbar px-10-b-2">
+			<nav class="px-10-b-2">
 				<ul class="flex items-center justify-center relative">
 					<li>
 						<button
@@ -167,8 +163,8 @@
 			</nav>
 
 			<!-- sections -->
-			<div class="content">
-				<div class="page-content">
+			<div>
+				<div>
 					<slot />
 				</div>
 			</div>
