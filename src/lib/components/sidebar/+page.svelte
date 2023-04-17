@@ -22,7 +22,8 @@
 			<button
 				on:click={showSidebarVideoFunction}
 				class="hamb text-2xl hover:bg-gray-300 p-2 rounded-full"
-				><Icon icon="ci:hamburger-lg" /></button>
+				><Icon icon="ci:hamburger-lg" /></button
+			>
 			<a
 				href="/"
 				on:click={() => {
@@ -87,7 +88,7 @@
 				on:click={() => {
 					showSidebarVideo = false;
 					document.body.classList.remove('hide-scroll');
-					showSidebarVideoFunction
+					showSidebarVideoFunction;
 				}}
 				class="flex items-center gap-2 hover:bg-gray-200 py-1 px-3 rounded-lg w-full "
 				><Icon icon="material-symbols:home" color="black" width="30" />

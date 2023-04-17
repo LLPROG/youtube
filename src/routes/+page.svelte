@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Icon from '@iconify/svelte';
 	import { goto } from '$app/navigation';
 	import { daysBetween } from '$lib/global functions/days_between';
 	import { compactNumber } from '$lib/global functions/compactNumer';
@@ -10,7 +11,7 @@
 
 <div class="flex flex-wrap px-10 pt-5 justify-start w-fit">
 	{#each videos as video}
-		<div class="shrink-0 grow-0 p-3 md:basis-1/2 lg:basis-1/3 xl:basis-1/4 w-full">
+		<div class="shrink-0 grow-0 p-2 md:basis-1/1 lg:basis-1/2 xl:basis-1/3 w-full">
 			<button
 				on:click={() => {
 					goto(`/video/${video?.id}`);
@@ -21,7 +22,7 @@
 					<img
 						src={video.snippet.thumbnails.standard?.url}
 						alt={video.snippet.title}
-						class="rounded-md object-cover aspect-video"
+						class="rounded-xl object-cover aspect-video"
 					/>
 				</div>
 
@@ -40,12 +41,13 @@
 							}}
 							class="text-sm">{video.snippet.channelTitle}</button
 						>
-						<p class="text-sm">
+						<p class="text-sm ">
 							<span
 								>{compactNumber(video.statistics.viewCount)
 									.toString()
-									.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} Visualizzazioni -
+									.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} Visualizzazioni
 							</span>
+							<Icon icon="ph:dot-bold" class="inline-block" />
 							<span>{daysBetween(video.snippet.publishedAt)}</span>
 						</p>
 					</div>

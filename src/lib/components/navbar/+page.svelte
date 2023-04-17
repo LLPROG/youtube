@@ -125,12 +125,12 @@
 						on:click={() => (showMenuLogin = !showMenuLogin)}
 						class="account border rounded-full w-8 h-8 p-4 flex justify-center items-center bg-violet-600 text-white"
 					>
-						<span>L</span>
+						<span>{$page.data.user.name.charAt(0).toUpperCase()}</span>
 
 						<!-- menu login -->
 						<ul
 							style:visibility={showMenuLogin ? 'visible' : 'hidden'}
-							class="absolute z-10 text-black right-1 top-14 border bg-white min-w-[200px] rounded-xl"
+							class="menu absolute z-10 text-black right-1 top-14 border bg-white min-w-[200px] rounded-xl"
 						>
 							<li class="info-cont border-b-2 flex items-center gap-3 px-4 py-2">
 								<div
@@ -176,3 +176,9 @@
 		</div>
 	</nav>
 </header>
+
+<style>
+	.menu {
+		box-shadow: 0px 4px 32px 0px rgba(0, 0, 0, 0.3);
+	}
+</style>

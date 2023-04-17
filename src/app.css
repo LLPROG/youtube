@@ -45,8 +45,9 @@ body:not([hide-scroll])::-webkit-scrollbar-thumb {
 }
 
 body.hide-scroll {
-	overflow-y: hidden !important;
+	overflow: hidden !important;
 	right: 16px;
+	pointer-events: none;
 }
 
 body::before {
@@ -58,12 +59,16 @@ body::before {
 body.hide-scroll::before {
 	background: rgba(0, 0, 0, 0.5);
 	content: '';
-	height: 100%;
-	width: 100%;
 	opacity: 0.8;
 	pointer-events: none;
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
+	right: 0;
+	bottom: 0;
 	z-index: 1;
+}
+
+.sidebar {
+	pointer-events: auto;
 }

@@ -34,6 +34,8 @@
 	let showMenuComment = false;
 	let modifyCommentBool = false;
 	let comment: any;
+	let openMenuBool = false;
+
 	// $: console.log(comments);
 
 	$: iframe = data.video.items[0].player.embedHtml
@@ -240,7 +242,7 @@
 	});
 </script>
 
-<div class="flex w-full px-[24px] pt-5">
+<div class="flex w-full px-[24px] pt-5 max-w-[1300px] m-auto">
 	<div class="video-cont basis-4/6">
 		<!-- player -->
 		<div
@@ -258,7 +260,7 @@
 			<div class="details flex items-center justify-between pt-3">
 				<!-- left cont details -->
 				<div class="left-det flex gap-3 items-center w-full">
-					<img src={channel?.snippet.thumbnails.standard?.url} alt="" class="rounded-full w-10" />
+					<img src={channel?.snippet.thumbnails.default?.url} alt="" class="rounded-full w-10" />
 					<div class="channel">
 						<button
 							on:click={(e) => {
@@ -272,13 +274,40 @@
 						</p>
 					</div>
 					{#if login}
-						{#if !channelSubscribes.includes(channel.id)}
-							<button on:click={subscribe} class="sub mx-3 button-standard button-black"
-								>Iscriviti</button
-							>
-						{:else}
-							<button on:click={unSubscribe} class="sub mx-3 button-standard">Iscritto</button>
-						{/if}
+						<div class="w-40 flex items-center justify-center relative">
+							{#if !channelSubscribes.includes(channel.id)}
+								<button on:click={subscribe} class="sub mx-3 button-standard button-black"
+									>Iscriviti</button
+								>
+							{:else}
+								<button
+									class="button-standard border flex items-center gap-1 hover:bg-gray-300"
+									on:click={() => {
+										openMenuBool = !openMenuBool;
+									}}
+								>
+									<Icon icon="mdi:bell-outline" class="text-xl" />
+									<span>Iscritto</span>
+									<Icon icon="material-symbols:keyboard-arrow-down" class="text-xl" /></button
+								>
+								<ul
+									style:visibility={openMenuBool ? 'visible' : 'hidden'}
+									class="menu absolute p-5 top-9 left-7 rounded-md w-fit h-20 bg-white"
+								>
+									<li>
+										<button
+											on:click={() => {
+												unSubscribe();
+												openMenuBool = !openMenuBool;
+											}}
+											class="flex items-center gap-2"
+											><Icon icon="mdi:user-minus-outline" class="text-xl" /><span>Annulla</span
+											></button
+										>
+									</li>
+								</ul>
+							{/if}
+						</div>
 					{:else}
 						<div class="div relative mx-3">
 							<button
@@ -314,7 +343,7 @@
 								on:click={() => {
 									likeVideo(video.statistics.likeCount, video.id);
 								}}
-								class="like border-e-[1px] border-e-[gray] px-2 flex items-center gap-1"
+								class="like border-e-[1px] border-e-[gray] px-2 flex items-center gap-1 hover:bg-gray-300 rounded-s-full"
 								style:padding="5px"
 							>
 								<Icon
@@ -324,7 +353,9 @@
 
 								{counterLikedVideo}
 							</button>
-							<button class="dislike px-2"><Icon icon="mdi:dislike-outline" /></button>
+							<button class="dislike px-2 hover:bg-gray-300 rounded-e-full"
+								><Icon icon="mdi:dislike-outline" /></button
+							>
 						</div>
 					{:else}
 						<div class="buttons-like-unlike button-standard flex items-center p-0">
@@ -386,7 +417,7 @@
 					{/if}
 
 					<!-- share button -->
-					<button class="share button-standard flex items-center gap-1"
+					<button class="share button-standard flex items-center gap-1 hover:bg-gray-300"
 						><Icon icon="mdi:share-outline" />Condividi</button
 					>
 
@@ -401,7 +432,9 @@
 					> -->
 
 					<!-- extra -->
-					<button class="extra button-standard py-2"><Icon icon="mdi:dots-horizontal" /></button>
+					<button class="extra button-standard py-2 hover:bg-gray-300"
+						><Icon icon="mdi:dots-horizontal" /></button
+					>
 				</div>
 			</div>
 		</div>
@@ -840,5 +873,13 @@
 	.button-black {
 		background-color: black;
 		color: white;
+	}
+
+	.button-black:hover {
+		background-color: rgb(59, 59, 59);
+	}
+
+	.menu {
+		box-shadow: 0px 4px 32px 0px rgba(0, 0, 0, 0.3);
 	}
 </style>
