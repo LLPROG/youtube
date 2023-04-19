@@ -7,7 +7,7 @@
 	import { enhance } from '$app/forms';
 
 	let showMenuLogin = false;
-	let borderColor = '1px solid gray';
+	let borderColor = '1px solid #d3d3d3';
 	let showIcon = false;
 	$: login = $page.data.user;
 
@@ -23,13 +23,13 @@
 	};
 
 	const blurBorder = () => {
-		borderColor = '1px solid gray';
+		borderColor = '1px solid #d3d3d3';
 		showIcon = false;
 	};
 </script>
 
 <header>
-	<nav class="flex items-center p-3 w-full justify-between gap-28">
+	<nav class="flex items-center p-2 w-full justify-between gap-28">
 		<!-- left-navbar -->
 		<div class="left-cont flex items-center gap-2">
 			<button on:click={showSidebar} class="hamb text-2xl hover:bg-gray-300 p-2 rounded-full"
@@ -45,7 +45,7 @@
 					viewBox="0 0 90 20"
 					preserveAspectRatio="xMidYMid meet"
 					focusable="false"
-					class="style-scope yt-icon w-20"
+					class="style-scope yt-icon w-[90px]"
 					style="pointer-events: none; display: block; height: 100%;"
 					><g viewBox="0 0 90 20" preserveAspectRatio="xMidYMid meet" class="style-scope yt-icon"
 						><g class="style-scope yt-icon"
@@ -90,8 +90,8 @@
 		</div>
 
 		<!-- center-navbar -->
-		<div class="center-cont max-w-[700px] flex-1 flex items-center justify-center gap-2">
-			<div class="search w-full flex items-center">
+		<div class="center-cont max-w-[644px] flex-1 flex items-center justify-center gap-2">
+			<div class="search w-full flex items-center rounded-3xl" style:border={'1px solid #d3d3d3'}>
 				<div
 					class="search-input w-full flex items-center p-2 ps-3 text-1xl border rounded-s-3xl"
 					style:border={borderColor}
@@ -106,7 +106,7 @@
 					/>
 				</div>
 				<button
-					class="search-icon border border-gray-400 text-black text-2xl pe-3 ps-3 py-2 rounded-e-3xl bg-gray-200"
+					class="search-icon border-gray-400 text-black text-2xl px-4 py-2 rounded-e-3xl bg-gray-100"
 				>
 					<Icon icon="material-symbols:search-rounded" />
 				</button>
@@ -118,9 +118,13 @@
 		<div class="right-cont text-xl">
 			{#if login}
 				<!-- se loggato -->
-				<div class="set-login flex justify-end items-center gap-3">
-					<div class="crea"><Icon icon="material-symbols:video-call-outline-sharp" /></div>
-					<div class="notifiche"><Icon icon="mdi:bell-outline" color="black" /></div>
+				<div class="set-login flex justify-end items-center gap-5">
+					<div class="crea">
+						<Icon icon="material-symbols:video-call-outline-sharp" class="text-2xl" />
+					</div>
+					<div class="notifiche">
+						<Icon icon="mdi:bell-outline" color="black" class="text-2xl" />
+					</div>
 					<button
 						on:click={() => (showMenuLogin = !showMenuLogin)}
 						class="account border rounded-full w-8 h-8 p-4 flex justify-center items-center bg-violet-600 text-white"

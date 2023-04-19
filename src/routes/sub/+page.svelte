@@ -1,18 +1,21 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
-	import { compactNumber } from '$lib/global functions/compactNumer';
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import Icon from '@iconify/svelte';
+	import { compactNumber } from '$lib/global functions/compactNumer';
+	import { browser } from '$app/environment';
+	import { userLocals } from '$lib/stores/store';
 
 	export let data: PageData;
+	$: channelVideos = data.videosForChannel;
 
 	let _refs: HTMLUListElement[] = [];
 	let channelSubscribes: String[] = [];
 	$: login = $page.data.user;
-	$: channelVideos = data.videosForChannel.items;
-	// $: console.log(data.videosForChannel.items);
+
+	// $: console.log(data.videosForChannel, 'ch');
 
 	// open menu for unsubscribe
 	const openMenu = (i: any) => {
@@ -27,6 +30,10 @@
 	const subscribe = (channel: any) => {
 		channelSubscribes = [...channelSubscribes, channel.id];
 		localStorage.subscribes = JSON.stringify(channelSubscribes);
+		userLocals.subscribe((value) => {
+			value.subscribers = [...JSON.parse(localStorage.subscribes)];
+		});
+
 		// console.log(channelSubscribes);
 	};
 
@@ -36,6 +43,9 @@
 			channelSubscribes.splice(index, 1);
 			channelSubscribes = channelSubscribes;
 			localStorage.subscribes = JSON.stringify(channelSubscribes);
+			userLocals.subscribe((value) => {
+				value.subscribers = [...JSON.parse(localStorage.subscribes)];
+			});
 			// console.log(channelSubscribes);
 		}
 	};
@@ -44,79 +54,81 @@
 		if (localStorage.subscribes) {
 			channelSubscribes = [...JSON.parse(localStorage.subscribes)];
 		}
-
-		console.log(JSON.parse(localStorage.subscribes).length);
 	});
 </script>
 
 {#if login}
-	{#if !localStorage.subscribes || JSON.parse(localStorage.subscribes).length === 0}
-		<div class="w-full flex justify-center pt-10">
-			<h1>Non sei iscritto a nessun canale</h1>
-		</div>
-	{:else}
-		<div class="pt-10 w-full flex flex-col justify-center items-center gap-10">
-			{#each channelVideos as channel, i}
-				<div class="flex items-center gap-2">
-					<div class="shrink-0 px-10 w-80 flex items-center justify-center">
-						<img
-							src={channel.snippet.thumbnails.default?.url}
-							alt={channel.snippet.title}
-							class="rounded-full w-[50%]"
-						/>
+	{#if browser}
+		{#if !channelVideos.items}
+			<div class="w-full flex justify-center pt-10">
+				<h1>Non sei iscritto a nessun canale</h1>
+			</div>
+		{:else}
+			<div class="pt-10 w-full flex flex-col justify-center items-center gap-10">
+				{#each channelVideos.items as channel, i}
+					<div class="flex items-center gap-2">
+						<div class="shrink-0 px-10 w-80 flex items-center justify-center">
+							<img
+								src={channel.snippet.thumbnails.default?.url}
+								alt={channel.snippet.title}
+								class="rounded-full w-[50%]"
+							/>
+						</div>
+						<div class="w-96 max-h-[136px] overflow-hidden">
+							<h1 class="text-[18px] font-semibold">{channel.snippet.title}</h1>
+							<p class="pt-2 flex text-[12px] text-[#606060]">
+								<span class="shrink-0"
+									>{`${compactNumber(channel.statistics.subscriberCount)
+										.toString()
+										.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} di iscritti`}
+								</span>
+								<Icon icon="mdi:dot" />
+								<span class="overflow-hidden w-full text-ellipsis line-clamp-1">
+									{`${compactNumber(channel.statistics.videoCount)
+										.toString()
+										.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} video`}
+								</span>
+							</p>
+							<p class="pt-2 text-[12px] text-[#606060]">{channel.snippet?.description}</p>
+						</div>
+						<div class="w-40 flex items-center justify-center relative">
+							{#if channelSubscribes.includes(channel.id)}
+								<button
+									on:click={() => openMenu(i)}
+									class="button-standard border flex items-center gap-2"
+								>
+									<Icon icon="mdi:bell-outline" class="text-xl" />
+									<span>Iscritto</span>
+									<Icon icon="material-symbols:keyboard-arrow-down" class="text-xl" />
+								</button>
+								<ul bind:this={_refs[i]} class="absolute p-5 top-9 left-7 border rounded-md hidden">
+									<li>
+										<button
+											on:click={() => {
+												unSubscribe(channel);
+												openMenu(i);
+											}}
+											class="flex items-center gap-2"
+											><Icon icon="mdi:user-minus-outline" class="text-xl" /><span>Annulla</span
+											></button
+										>
+									</li>
+								</ul>
+							{:else}
+								<button
+									on:click={() => {
+										subscribe(channel);
+									}}
+									class="button-standard button-black border flex items-center gap-2"
+								>
+									<Icon icon="mdi:bell-outline" class="text-xl" /> <span>Iscriviti</span></button
+								>
+							{/if}
+						</div>
 					</div>
-					<div class="w-96 max-h-[136px] overflow-hidden">
-						<h1 class="text-[18px] font-semibold">{channel.snippet.title}</h1>
-						<p class="pt-2 flex text-[12px] text-[#606060]">
-							<span class="shrink-0"
-								>{`${compactNumber(channel.statistics.subscriberCount)
-									.toString()
-									.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} di iscritti`}
-							</span>
-							<Icon icon="mdi:dot" />
-							<span class="overflow-hidden w-full text-ellipsis line-clamp-1">
-								{`${compactNumber(channel.statistics.videoCount)
-									.toString()
-									.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} video`}
-							</span>
-						</p>
-						<p class="pt-2 text-[12px] text-[#606060]">{channel.snippet?.description}</p>
-					</div>
-					<div class="w-40 flex items-center justify-center relative">
-						{#if channelSubscribes.includes(channel.id)}
-							<button class="button-standard border flex items-center gap-2">
-								<Icon icon="mdi:bell-outline" class="text-xl" /> <span>Iscritto</span></button
-							>
-							<button on:click={() => openMenu(i)}
-								><Icon icon="material-symbols:keyboard-arrow-down" class="text-xl" /></button
-							>
-							<ul bind:this={_refs[i]} class="absolute p-5 top-9 left-7 border rounded-md hidden">
-								<li>
-									<button
-										on:click={() => {
-											unSubscribe(channel);
-											openMenu(i);
-										}}
-										class="flex items-center gap-2"
-										><Icon icon="mdi:user-minus-outline" class="text-xl" /><span>Annulla</span
-										></button
-									>
-								</li>
-							</ul>
-						{:else}
-							<button
-								on:click={() => {
-									subscribe(channel);
-								}}
-								class="button-standard button-black border flex items-center gap-2"
-							>
-								<Icon icon="mdi:bell-outline" class="text-xl" /> <span>Iscriviti</span></button
-							>
-						{/if}
-					</div>
-				</div>
-			{/each}
-		</div>
+				{/each}
+			</div>
+		{/if}
 	{/if}
 {:else}
 	<div class="flex justify-center items-center w-full">

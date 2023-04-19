@@ -1,4 +1,4 @@
-import type { Handle, HandleServerError } from '@sveltejs/kit';
+import type { Handle, HandleServerError, HandleFetch } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 
 export const handle1: Handle = async ({ event, resolve }) => {
@@ -15,19 +15,19 @@ export const handle1: Handle = async ({ event, resolve }) => {
 
 export const handle = sequence(handle1);
 
-// export const handleFetch: HandleFetch = ({ request, event, fetch }) => {
-// 	if (request.url.startsWith('https://dummyjson.com/')) {
-// 		const cookie = event.request.headers.get('cookie');
-// 		if (cookie) {
-// 			request.headers.set('cookie', cookie);
-// 		}
-// 	}
-// 	return fetch(request);
-// };
+export const handleFetch: HandleFetch = ({ request, event, fetch }) => {
+	if (request.url.startsWith('https://dummyjson.com/')) {
+		const cookie = event.request.headers.get('cookie');
+		if (cookie) {
+			request.headers.set('cookie', cookie);
+		}
+	}
+	return fetch(request);
+};
 
-export const handleError: HandleServerError = ({ error, event }) => {
-	console.log('This is coming from handleError.');
-	console.log(error, event); // Send to sentry or any error logging service.
+export const handleError: HandleServerError = ({ error }) => {
+	// console.log('This is coming from handleError.');
+	console.log(error, 'hookError'); // Send to sentry or any error logging service.
 
 	return {
 		message: 'An unexpected error has occurred.',

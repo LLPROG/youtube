@@ -4,6 +4,8 @@
 	import { compactNumber } from '$lib/global functions/compactNumer';
 	import type { LayoutData } from './$types';
 	import { onMount } from 'svelte';
+	import { userLocals } from '$lib/stores/store';
+
 	export let data: LayoutData;
 	console.log(data);
 	$: channel = data.channel.items[0];
@@ -24,6 +26,9 @@
 	const subscribe = (channel: any) => {
 		channelSubscribes = [...channelSubscribes, channel.id];
 		localStorage.subscribes = JSON.stringify(channelSubscribes);
+		userLocals.subscribe((value) => {
+			value.subscribers = [...JSON.parse(localStorage.subscribes)];
+		});
 	};
 
 	const unSubscribe = (channel: any) => {
@@ -32,6 +37,9 @@
 			channelSubscribes.splice(index, 1);
 			channelSubscribes = channelSubscribes;
 			localStorage.subscribes = JSON.stringify(channelSubscribes);
+			userLocals.subscribe((value) => {
+				value.subscribers = [...JSON.parse(localStorage.subscribes)];
+			});
 		}
 	};
 

@@ -1,12 +1,17 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { auth } from '$lib/global variable/auth';
+import { userLocals } from '../../lib/stores/store';
+
 export const load: PageLoad = async ({ fetch }) => {
-	if (localStorage.subscribes) {
-		let channelSubscribes = [];
-		channelSubscribes = [...JSON.parse(localStorage.subscribes)];
+	let sub;
+	userLocals.subscribe((value) => {
+		sub = value.subscribers ? value.subscribers : null;
+	});
+
+	if (sub) {
 		const videosForChannelRes = await fetch(
-			`https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${channelSubscribes}&key=${auth}`,
+			`https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${sub}&key=${auth}`,
 			{
 				method: 'get',
 				headers: new Headers({
@@ -19,10 +24,12 @@ export const load: PageLoad = async ({ fetch }) => {
 			throw redirect(301, '/');
 		}
 
-		const videosForChannel = await videosForChannelRes.json();
-
 		return {
-			videosForChannel
+			videosForChannel: videosForChannelRes.json()
+		};
+	} else {
+		return {
+			videosForChannel: []
 		};
 	}
 };

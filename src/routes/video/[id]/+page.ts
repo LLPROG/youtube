@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { auth } from '$lib/global variable/auth';
+import { userLocals } from '../../../lib/stores/store';
 
 export const load: PageLoad = async ({ params, fetch }) => {
 	const videoRes = await fetch(
@@ -45,13 +46,16 @@ export const load: PageLoad = async ({ params, fetch }) => {
 
 	const videosByIds = await videosByIdsRes.json();
 
-	let likedVideos = null;
+	let likedVideos = [];
 
-	if (localStorage.likedVideos) {
+	let likedVideosLocals;
+	userLocals.subscribe((value) => {
+		likedVideosLocals = value.likedVideos ? value.likedVideos : null;
+	});
+
+	if (likedVideosLocals) {
 		const likedVideosRes = await fetch(
-			`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2C%20player%2CcontentDetails%2Cstatistics&id=${[
-				...JSON.parse(localStorage.likedVideos)
-			]}&key=${auth}`,
+			`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2C%20player%2CcontentDetails%2Cstatistics&id=${likedVideosLocals}&key=${auth}`,
 			{
 				method: 'get',
 				headers: new Headers({

@@ -26,11 +26,15 @@
 					/>
 				</div>
 
-				<div class="flex gap-3 mt-4 text-gray-600 text-start">
-					<img src={video.snippet.thumbnails.standard?.url} alt="" class="rounded-full w-10 h-10" />
+				<div class="flex gap-3 mt-4 text-secondary-color text-start">
+					<img
+						src={video.snippet.thumbnails.standard?.url}
+						alt={video.snippet.title}
+						class="rounded-full w-10 h-10"
+					/>
 					<div class="flex flex-col items-start">
 						<h3
-							class="text-black font-semibold overflow-hidden w-full max-h-12 text-ellipsis line-clamp-2"
+							class="text-primary-color font-semibold overflow-hidden w-full max-h-12 text-ellipsis line-clamp-2"
 						>
 							{video.snippet.title}
 						</h3>
@@ -41,7 +45,7 @@
 							}}
 							class="text-sm">{video.snippet.channelTitle}</button
 						>
-						<p class="text-sm ">
+						<p class="text-sm">
 							<span
 								>{compactNumber(video.statistics.viewCount)
 									.toString()

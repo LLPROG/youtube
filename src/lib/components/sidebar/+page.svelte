@@ -1,8 +1,8 @@
 <script>
-	import { goto } from '$app/navigation';
+	import '../../../app.css';
+	import { goto, invalidate, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Icon from '@iconify/svelte';
-	import '../../../app.css';
 	import { createEventDispatcher } from 'svelte';
 	export let showSidebar = true;
 	export let showSidebarVideo = undefined;
@@ -16,7 +16,7 @@
 	};
 </script>
 
-<div class="sidebar p-2 min-w-fit bg-white max-w-[250px]">
+<div class="sidebar px-2 bg-white max-w-[250px] text-[14px]">
 	{#if $page.url.pathname.startsWith('/video')}
 		<div class="left-cont flex items-center gap-2 px-1">
 			<button
@@ -80,21 +80,21 @@
 			</a>
 		</div>
 	{/if}
-	<ul class="flex flex-col gap-4 w-fit pt-4">
+	<ul class="flex flex-col w-full pt-4">
 		<li>
 			<a
 				href="/"
 				data-sveltekit-replacestate
-				on:click={() => {
+				on:click={(e) => {
 					showSidebarVideo = false;
 					document.body.classList.remove('hide-scroll');
 					showSidebarVideoFunction;
 				}}
-				class="flex items-center gap-2 hover:bg-gray-200 py-1 px-3 rounded-lg w-full "
-				><Icon icon="material-symbols:home" color="black" width="30" />
-				{#if showSidebar}
-					<span>Home</span>
-				{/if}
+				class={`flex ${
+					!showSidebar ? 'flex-col' : ''
+				} items-center gap-4 hover:bg-gray-200 py-2 px-3 rounded-lg w-full`}
+				><Icon icon="material-symbols:home" color="black" width="25" class="pointer-events-none" />
+				<span class={`flex ${!showSidebar ? 'text-[10px]' : ''}`}>Home</span>
 			</a>
 		</li>
 		<li class="border-b-2 pb-2">
@@ -105,11 +105,11 @@
 					showSidebarVideo = false;
 					document.body.classList.remove('hide-scroll');
 				}}
-				class="flex items-center gap-2 hover:bg-gray-200 py-1 px-3 rounded-lg w-full"
-				><Icon icon="material-symbols:music-video-outline" color="black" width="30" />
-				{#if showSidebar}
-					<span>Iscrizioni</span>
-				{/if}
+				class={`flex ${
+					!showSidebar ? 'flex-col' : ''
+				} items-center gap-4 hover:bg-gray-200 py-2 px-3 rounded-lg w-full`}
+				><Icon icon="material-symbols:music-video-outline" color="black" width="25" />
+				<span class={`flex ${!showSidebar ? 'text-[10px]' : ''}`}>Iscrizioni</span>
 			</a>
 		</li>
 		{#if login}
@@ -121,10 +121,14 @@
 						showSidebarVideo = false;
 						document.body.classList.remove('hide-scroll');
 					}}
-					class="flex items-center gap-2 hover:bg-gray-200 py-1 px-3 rounded-lg w-full"
-					><Icon icon="ph:video-light" width="30" />{#if showSidebar}<span>Video Piaciuti</span
-						>{/if}</a
-				>
+					class={`flex ${
+						!showSidebar ? 'flex-col' : ''
+					} items-center gap-4 hover:bg-gray-200 py-2 px-3 rounded-lg w-full`}
+					><Icon icon="ph:video-light" width="25" />
+					<span class={`flex ${!showSidebar ? 'text-[10px]' : ''}`}
+						>{!showSidebar ? 'Piaciuti' : 'Video Piaciuti'}</span
+					>
+				</a>
 			</li>
 		{:else if showSidebar}
 			<li class="flex flex-col items-start gap-3 py-1 px-3">
