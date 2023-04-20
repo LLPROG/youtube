@@ -132,7 +132,7 @@
 			</li>
 		{:else if showSidebar}
 			<li class="flex flex-col items-start gap-3 py-1 px-3">
-				<p class="">
+				<p class="max-w-[200px]">
 					Effettua l'accesso per mettere Mi piace ai video, commentare e iscriverti ai canali.
 				</p>
 

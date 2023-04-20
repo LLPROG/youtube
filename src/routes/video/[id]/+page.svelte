@@ -8,12 +8,12 @@
 	import { page } from '$app/stores';
 	import { afterNavigate, goto } from '$app/navigation';
 	import { auth } from '$lib/global variable/auth';
-	import { browser } from '$app/environment';
 	import { userLocals } from '$lib/stores/store';
 
 	export let data: PageData;
 
 	$: login = $page.data.user;
+	// $: console.log(login, 'login');
 	let prevPage: any = '';
 	let openBannerBoolSub: Boolean = false;
 	let openBannerBoolLike: Boolean = false;
@@ -258,596 +258,540 @@
 	});
 </script>
 
-{#if browser}
-	<div class="flex w-full pt-5 px-10 m-auto">
-		<div class="video-cont basis-4/6">
-			<!-- player -->
-			<div class="iframe-cont w-full aspect-auto" contenteditable="true" bind:innerHTML={iframe} />
+<div class="flex w-full pt-5 px-10 m-auto">
+	<div class="video-cont basis-4/6">
+		<!-- player -->
+		<div class="iframe-cont w-full aspect-auto" contenteditable="true" bind:innerHTML={iframe} />
 
-			<!-- info details -->
-			<div class="info-video">
-				<!-- title -->
-				<h1 class="font-bold text-xl text-primary-color pt-3">{video.snippet.title}</h1>
+		<!-- info details -->
+		<div class="info-video">
+			<!-- title -->
+			<h1 class="font-bold text-xl text-primary-color pt-3">{video.snippet.title}</h1>
 
-				<!-- details -->
-				<div class="details flex items-center justify-between pt-3">
-					<!-- left cont details -->
-					<div class="left-det flex gap-3 items-center w-full">
-						<img src={channel?.snippet.thumbnails.default?.url} alt="" class="rounded-full w-10" />
-						<div class="channel">
-							<button
-								on:click={(e) => {
-									e.stopPropagation();
-									goto(`/channel/${video.snippet.channelId}`);
-								}}
-								class="font-bold">{video.snippet.channelTitle}</button
-							>
-							<p class="text-secondary-color text-sm">
-								{`${compactNumber(+channel.statistics.subscriberCount)} di iscritti`}
-							</p>
+			<!-- details -->
+			<div class="details flex items-center justify-between pt-3">
+				<!-- left cont details -->
+				<div class="left-det flex gap-3 items-center w-full">
+					<img src={channel?.snippet.thumbnails.default?.url} alt="" class="rounded-full w-10" />
+					<div class="channel">
+						<button
+							on:click={(e) => {
+								e.stopPropagation();
+								goto(`/channel/${video.snippet.channelId}`);
+							}}
+							class="font-bold">{video.snippet.channelTitle}</button
+						>
+						<p class="text-secondary-color text-sm">
+							{`${compactNumber(+channel.statistics.subscriberCount)} di iscritti`}
+						</p>
+					</div>
+					{#if login}
+						<div class="w-40 flex items-center justify-center relative">
+							{#if !channelSubscribes.includes(channel.id)}
+								<button on:click={subscribe} class="sub mx-3 button-standard button-black"
+									>Iscriviti</button
+								>
+							{:else}
+								<button
+									class="button-standard border flex items-center gap-1 hover:bg-gray-300"
+									on:click={() => {
+										openMenuBool = !openMenuBool;
+									}}
+								>
+									<Icon icon="mdi:bell-outline" class="text-xl" />
+									<span>Iscritto</span>
+									<Icon icon="material-symbols:keyboard-arrow-down" class="text-xl" /></button
+								>
+								<ul
+									style:visibility={openMenuBool ? 'visible' : 'hidden'}
+									class="menu absolute p-5 top-9 left-7 rounded-md w-fit h-20 bg-white"
+								>
+									<li>
+										<button
+											on:click={() => {
+												unSubscribe();
+												openMenuBool = !openMenuBool;
+											}}
+											class="flex items-center gap-2"
+											><Icon icon="mdi:user-minus-outline" class="text-xl" /><span>Annulla</span
+											></button
+										>
+									</li>
+								</ul>
+							{/if}
 						</div>
-						{#if login}
-							<div class="w-40 flex items-center justify-center relative">
-								{#if !channelSubscribes.includes(channel.id)}
-									<button on:click={subscribe} class="sub mx-3 button-standard button-black"
-										>Iscriviti</button
-									>
-								{:else}
-									<button
-										class="button-standard border flex items-center gap-1 hover:bg-gray-300"
-										on:click={() => {
-											openMenuBool = !openMenuBool;
-										}}
-									>
-										<Icon icon="mdi:bell-outline" class="text-xl" />
-										<span>Iscritto</span>
-										<Icon icon="material-symbols:keyboard-arrow-down" class="text-xl" /></button
-									>
-									<ul
-										style:visibility={openMenuBool ? 'visible' : 'hidden'}
-										class="menu absolute p-5 top-9 left-7 rounded-md w-fit h-20 bg-white"
-									>
-										<li>
-											<button
-												on:click={() => {
-													unSubscribe();
-													openMenuBool = !openMenuBool;
-												}}
-												class="flex items-center gap-2"
-												><Icon icon="mdi:user-minus-outline" class="text-xl" /><span>Annulla</span
-												></button
-											>
-										</li>
-									</ul>
-								{/if}
-							</div>
-						{:else}
-							<div class="div relative mx-3">
+					{:else}
+						<div class="div relative mx-3">
+							<button
+								on:click|stopPropagation={() => {
+									openBannerBoolSub = !openBannerBoolSub;
+									openBannerBoolLike = false;
+									openBannerBoolDislike = false;
+									document.body.addEventListener('click', handleMenuClose);
+								}}
+								class="sub button-standard button-black">Iscriviti</button
+							>
+							{#if openBannerBoolSub}
+								<div
+									on:click|stopPropagation={() => {}}
+									on:keypress|stopPropagation={() => {}}
+									class="banner absolute top-9 left-0 border p-5 bg-white min-w-[380px] text-start"
+								>
+									<p class="py-3 flex-1">Vuoi iscriverti al canale?</p>
+									<p class="py-3 text-sm">Accedi per isciverti a questo canale</p>
+									<a href="/login" class="py-3 text-sm text-[#065fd4]">Accedi</a>
+								</div>
+							{/if}
+						</div>
+					{/if}
+				</div>
+
+				<!-- right content details -->
+				<div class="right-det flex items-center gap-2">
+					<!-- like unlike buttons -->
+					{#if login}
+						<div class="buttons-like-unlike button-standard flex p-0">
+							<button
+								on:click={() => {
+									likeVideo(video.statistics.likeCount, video.id);
+								}}
+								class="like border-e-[1px] border-e-[gray] px-2 flex items-center gap-1 hover:bg-gray-300 rounded-s-full"
+								style:padding="5px"
+							>
+								<Icon
+									icon={colorLikeBool ? 'mdi:like' : 'mdi:like-outline'}
+									color={colorLikeBool ? 'blue' : ''}
+								/>
+
+								{counterLikedVideo}
+							</button>
+							<button class="dislike px-2 hover:bg-gray-300 rounded-e-full"
+								><Icon icon="mdi:dislike-outline" /></button
+							>
+						</div>
+					{:else}
+						<div class="buttons-like-unlike button-standard flex items-center p-0">
+							<div class="relative">
 								<button
 									on:click|stopPropagation={() => {
-										openBannerBoolSub = !openBannerBoolSub;
-										openBannerBoolLike = false;
+										openBannerBoolLike = !openBannerBoolLike;
+										openBannerBoolSub = false;
 										openBannerBoolDislike = false;
+
 										document.body.addEventListener('click', handleMenuClose);
 									}}
-									class="sub button-standard button-black">Iscriviti</button
-								>
-								{#if openBannerBoolSub}
-									<div
-										on:click|stopPropagation={() => {}}
-										on:keypress|stopPropagation={() => {}}
-										class="banner absolute top-9 left-0 border p-5 bg-white min-w-[380px] text-start"
-									>
-										<p class="py-3 flex-1">Vuoi iscriverti al canale?</p>
-										<p class="py-3 text-sm">Accedi per isciverti a questo canale</p>
-										<button class="py-3 text-sm text-[#065fd4]">Accedi</button>
-									</div>
-								{/if}
-							</div>
-						{/if}
-					</div>
-
-					<!-- right content details -->
-					<div class="right-det flex items-center gap-2">
-						<!-- like unlike buttons -->
-						{#if login}
-							<div class="buttons-like-unlike button-standard flex p-0">
-								<button
-									on:click={() => {
-										likeVideo(video.statistics.likeCount, video.id);
-									}}
-									class="like border-e-[1px] border-e-[gray] px-2 flex items-center gap-1 hover:bg-gray-300 rounded-s-full"
+									class="like border-e-[1px] border-e-[gray] px-2 flex items-center gap-1"
 									style:padding="5px"
 								>
-									<Icon
-										icon={colorLikeBool ? 'mdi:like' : 'mdi:like-outline'}
-										color={colorLikeBool ? 'blue' : ''}
-									/>
+									<Icon icon="mdi:like-outline" />
 
-									{counterLikedVideo}
-								</button>
-								<button class="dislike px-2 hover:bg-gray-300 rounded-e-full"
-									><Icon icon="mdi:dislike-outline" /></button
-								>
-							</div>
-						{:else}
-							<div class="buttons-like-unlike button-standard flex items-center p-0">
-								<div class="relative">
-									<button
-										on:click|stopPropagation={() => {
-											openBannerBoolLike = !openBannerBoolLike;
-											openBannerBoolSub = false;
-											openBannerBoolDislike = false;
-
-											document.body.addEventListener('click', handleMenuClose);
-										}}
-										class="like border-e-[1px] border-e-[gray] px-2 flex items-center gap-1"
-										style:padding="5px"
-									>
-										<Icon
-											icon={colorLikeBool ? 'mdi:like' : 'mdi:like-outline'}
-											color={colorLikeBool ? 'blue' : ''}
-										/>
-
-										{counterLikedVideo}
-										{#if openBannerBoolLike}
-											<div
-												on:click|stopPropagation={() => {}}
-												on:keypress|stopPropagation={() => {}}
-												class="banner absolute top-9 left-0 border p-5 bg-white min-w-[380px] text-start"
-											>
-												<p class="py-3">Ti piace questo video?</p>
-												<p class="py-3 text-sm">Esegui l'accesso: la tua opinione é importante</p>
-												<button class="py-3 text-sm text-[#065fd4]">Accedi</button>
-											</div>
-										{/if}
-									</button>
-								</div>
-								<div class="relative">
-									<button
-										on:click|stopPropagation={() => {
-											openBannerBoolDislike = !openBannerBoolDislike;
-											openBannerBoolSub = false;
-											openBannerBoolLike = false;
-
-											document.body.addEventListener('click', handleMenuClose);
-										}}
-										class="dislike px-2"><Icon icon="mdi:dislike-outline" /></button
-									>
-									{#if openBannerBoolDislike}
+									{video.statistics.likeCount}
+									{#if openBannerBoolLike}
 										<div
 											on:click|stopPropagation={() => {}}
 											on:keypress|stopPropagation={() => {}}
 											class="banner absolute top-9 left-0 border p-5 bg-white min-w-[380px] text-start"
 										>
-											<p class="py-3">Questo video non ti piace?</p>
+											<p class="py-3">Ti piace questo video?</p>
 											<p class="py-3 text-sm">Esegui l'accesso: la tua opinione é importante</p>
-											<button class="py-3 text-sm text-[#065fd4]">Accedi</button>
+											<a href="/login" class="py-3 text-sm text-[#065fd4]">Accedi</a>
 										</div>
 									{/if}
-								</div>
+								</button>
 							</div>
-						{/if}
+							<div class="relative">
+								<button
+									on:click|stopPropagation={() => {
+										openBannerBoolDislike = !openBannerBoolDislike;
+										openBannerBoolSub = false;
+										openBannerBoolLike = false;
 
-						<!-- share button -->
-						<button class="share button-standard flex items-center gap-1 hover:bg-gray-300"
-							><Icon icon="mdi:share-outline" />Condividi</button
-						>
+										document.body.addEventListener('click', handleMenuClose);
+									}}
+									class="dislike px-2"><Icon icon="mdi:dislike-outline" /></button
+								>
+								{#if openBannerBoolDislike}
+									<div
+										on:click|stopPropagation={() => {}}
+										on:keypress|stopPropagation={() => {}}
+										class="banner absolute top-9 left-0 border p-5 bg-white min-w-[380px] text-start"
+									>
+										<p class="py-3">Questo video non ti piace?</p>
+										<p class="py-3 text-sm">Esegui l'accesso: la tua opinione é importante</p>
+										<a href="/login" class="py-3 text-sm text-[#065fd4]">Accedi</a>
+									</div>
+								{/if}
+							</div>
+						</div>
+					{/if}
 
-						<!-- download button 
+					<!-- share button -->
+					<button class="share button-standard flex items-center gap-1 hover:bg-gray-300"
+						><Icon icon="mdi:share-outline" />Condividi</button
+					>
+
+					<!-- download button 
 					<button class="download button-standard flex items-center gap-1"
 						><Icon icon="material-symbols:download" />Scarica</button
 					> -->
 
-						<!-- save button 
+					<!-- save button 
 					<button class="save button-standard flex items-center gap-1"
 						><Icon icon="ic:twotone-playlist-add" />Salva</button
 					> -->
 
-						<!-- extra -->
-						<button class="extra button-standard py-2 hover:bg-gray-300"
-							><Icon icon="mdi:dots-horizontal" /></button
-						>
-					</div>
-				</div>
-			</div>
-
-			<!-- info user video -->
-			<div
-				on:click={() => {
-					if (!infoContOpen) {
-						showMoreText();
-					}
-				}}
-				on:keypress={() => {}}
-				style:line-Height="1.5rem"
-				class={`mt-4 bg-[#f2f2f2] p-2 rounded-md ${!infoContOpen ? 'hover:bg-[#d5d5d5]' : ''} `}
-				style:cursor={!infoContOpen ? 'pointer' : 'auto'}
-			>
-				<div bind:this={descContainer} class="info-use overflow-hidden">
-					<!-- views and publish -->
-					<p class="font-bold">
-						<span
-							>{`${compactNumber(+video.statistics.viewCount)
-								.toString()
-								.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} visualizzazioni`}
-						</span>
-						<span>
-							{daysBetween(video.snippet.publishedAt)}
-						</span>
-					</p>
-					<!-- description -->
-					<p bind:innerHTML={stringWithLinks} contenteditable="false" />
-				</div>
-				<button
-					class="font-semibold"
-					bind:this={descButton}
-					on:click|stopPropagation={(e) => {
-						if (!infoContOpen) {
-							showMoreText();
-						} else {
-							showLessText();
-							document.body.scrollTo(0, 0);
-						}
-					}}>{!infoContOpen ? 'Mostra Altro' : 'Mostra Meno'}</button
-				>
-			</div>
-
-			<!-- comments -->
-			<div class="comments">
-				<!-- header comments -->
-				<div class="header py-4 flex gap-5">
-					{#if comments}
-						<span>{`${comments.length} commenti`}</span>
-					{/if}
-					<div class="order">
-						<button>Ordina per</button>
-						<ul class="hidden">
-							<li><button>Commenti popolari</button></li>
-							<li><button>dal piu recente</button></li>
-						</ul>
-					</div>
-				</div>
-
-				<div class="add-comments pb-4">
-					{#if login}
-						<div class="user-inner-comment flex items-start gap-4">
-							<div
-								class="shrink-0 flex justify-center items-center overflow-hidden w-12 h-12 bg-slate-400 rounded-full"
-							>
-								{login.name.charAt(0).toUpperCase()}
-							</div>
-							<div class="w-full flex flex-col gap-2 relative">
-								<input
-									bind:value={textComment}
-									on:focus={() => {
-										focused = true;
-									}}
-									class="focus:outline-none border-b-[1px] w-full z-10"
-									type="text"
-									placeholder="Aggiungi un commento..."
-								/>
-								<div
-									class="line absolute top-6 border-b-2 border-black origin-center transition-[.5s] w-full"
-									style:transform={focused ? 'scale(1)' : 'scale(0)'}
-								/>
-								<div
-									style:height={focused ? '100%' : '0'}
-									class="buttons flex pt-2 justify-end gap-2 overflow-hidden"
-								>
-									<button
-										on:click={() => {
-											focused = false;
-										}}
-										class="hover:bg-gray-300 py-2 px-3 rounded-3xl">Annulla</button
-									>
-									<button
-										disabled={textComment === ''}
-										on:click={addComment}
-										class="hover:bg-[#065fd4] bg-[#065ff9] text-white py-2 px-3 rounded-3xl disabled:opacity-50"
-										>Commenta</button
-									>
-								</div>
-							</div>
-						</div>
-					{:else}
-						<button
-							on:click={() => {
-								goto('/login');
-							}}
-							class="flex items-center gap-2"
-						>
-							<div
-								class="thumb text-blue-600 border overflow-hidden border-blue-600 w-12 h-12 flex justify-center items-center rounded-full text-5xl"
-							>
-								<Icon icon="mdi:account" />
-							</div>
-							<input type="text" placeholder="aggiungi un commento" class="pointer-events-none" />
-						</button>
-					{/if}
-				</div>
-
-				<div class="comments-listn flex flex-col gap-5 mt-4">
-					{#if comments}
-						{#each comments as comment}
-							<div
-								on:focus={() => {}}
-								on:mouseover={() => {
-									if (comment.id === 'myid') {
-										hover = true;
-									}
-								}}
-								on:mouseleave={() => {
-									if (comment.id === 'myid' && showMenuComment == false) {
-										hover = false;
-									}
-								}}
-								class="comment-cont flex gap-5"
-							>
-								<div class="user-thum shrink-0 w-12 h-12">
-									{#if comment.snippet.topLevelComment.snippet?.authorProfileImageUrl == 'user'}
-										<div
-											class="rounded-full w-full h-full flex justify-center items-center bg-slate-400"
-										>
-											{comment.snippet.topLevelComment.snippet.authorDisplayName.charAt(0)}
-										</div>
-									{:else}
-										<img
-											class="rounded-full w-full"
-											src={comment.snippet.topLevelComment.snippet?.authorProfileImageUrl}
-											alt={comment.snippet.topLevelComment.snippet.authorDisplayName.charAt(0)}
-										/>
-									{/if}
-								</div>
-
-								<!-- comment-details -->
-								{#if comment.id === 'myid'}
-									<div class="w-full">
-										<!-- ------------------------------------------ -->
-
-										{#if modifyCommentBool}
-											<div class="user-inner-comment flex items-start gap-4 bg-white w-full">
-												<div class="w-full flex flex-col gap-2 relative">
-													<input
-														bind:value={textCommentModify}
-														on:focus={() => {
-															focusedModify = true;
-														}}
-														class="focus:outline-none border-b-[1px] w-full z-10"
-														type="text"
-														placeholder="Aggiungi un commento..."
-													/>
-													<div
-														class="line absolute top-6 border-b-2 border-black origin-center transition-[.5s] w-full"
-														style:transform={focusedModify ? 'scale(1)' : 'scale(0)'}
-													/>
-													<div
-														style:height={focusedModify ? '100%' : '0'}
-														class="buttons flex pt-2 justify-end gap-2 overflow-hidden"
-													>
-														<button
-															on:click={() => {
-																modifyCommentBool = false;
-															}}
-															class="hover:bg-gray-300 py-2 px-3 rounded-3xl"
-															>Annulla
-														</button>
-														<button
-															disabled={textCommentModify === ''}
-															on:click={modifyComment}
-															class="hover:bg-[#065fd4] bg-[#065ff9] text-white py-2 px-3 rounded-3xl disabled:opacity-50"
-															>Salva
-														</button>
-													</div>
-												</div>
-											</div>
-										{:else}
-											<div class="comment-details flex flex-col gap-1">
-												<p class="flex items-center gap-3">
-													<span class="user font-bold"
-														>{comment.snippet.topLevelComment.snippet.authorDisplayName}</span
-													><span
-														>{daysBetween(
-															comment.snippet.topLevelComment.snippet.publishedAt
-														)}</span
-													>
-												</p>
-												<p contenteditable="false">
-													{comment.snippet.topLevelComment.snippet.textOriginal}
-												</p>
-												<div class="buttons-like-unlike flex">
-													<button class="like flex items-center gap-1" style:padding="5px"
-														><Icon icon="mdi:like-outline" />{comment.snippet.topLevelComment
-															.snippet.likeCount}</button
-													>
-													<button class="dislike px-2"><Icon icon="mdi:dislike-outline" /></button>
-												</div>
-											</div>
-										{/if}
-									</div>
-								{:else}
-									<div class="comment-details flex flex-col gap-1">
-										<p class="flex items-center gap-3">
-											<span class="user font-bold"
-												>{comment.snippet.topLevelComment.snippet.authorDisplayName}</span
-											><span
-												>{daysBetween(comment.snippet.topLevelComment.snippet.publishedAt)}</span
-											>
-										</p>
-										{#if comment.id === 'myid'}
-											<p
-												bind:innerHTML={comment.snippet.topLevelComment.snippet.textOriginal}
-												contenteditable="true"
-											/>
-										{:else}
-											<p contenteditable="false">
-												{comment.snippet.topLevelComment.snippet.textOriginal}
-											</p>
-										{/if}
-										<div class="buttons-like-unlike flex">
-											<button class="like flex items-center gap-1" style:padding="5px"
-												><Icon icon="mdi:like-outline" />{comment.snippet.topLevelComment.snippet
-													.likeCount}</button
-											>
-											<button class="dislike px-2"><Icon icon="mdi:dislike-outline" /></button>
-										</div>
-									</div>
-								{/if}
-
-								{#if comment.id === 'myid' && hover && modifyCommentBool == false}
-									<div class="ms-auto relative">
-										<button
-											on:click={() => {
-												showMenuComment = !showMenuComment;
-											}}
-										>
-											<Icon icon="mdi:dots-vertical" class="text-xl" />
-										</button>
-										<ul
-											class="py-3 rounded-xl border absolute top-5 left-0 bg-white"
-											style:display={showMenuComment ? 'block' : 'none'}
-										>
-											<li>
-												<button
-													on:click={() => {
-														modifyCommentBool = true;
-														showMenuComment = false;
-													}}
-													class="px-5 py-2 flex items-center gap-3 hover:bg-gray-400 w-full"
-													><Icon
-														icon="streamline:interface-edit-pencil-change-edit-modify-pencil-write-writing"
-														class="text-xl"
-													/><span>Modifica</span></button
-												>
-											</li>
-											<li>
-												<button
-													on:click={deleteComment}
-													class="px-5 py-2 flex items-center gap-3 hover:bg-gray-400 w-full"
-													><Icon
-														icon="material-symbols:delete-outline-rounded"
-														class="text-xl"
-													/><span>Elimina</span></button
-												>
-											</li>
-										</ul>
-									</div>
-								{/if}
-							</div>
-						{/each}
-					{/if}
+					<!-- extra -->
+					<button class="extra button-standard py-2 hover:bg-gray-300"
+						><Icon icon="mdi:dots-horizontal" /></button
+					>
 				</div>
 			</div>
 		</div>
 
-		<!-- right-bar-->
-		<div class="basis-2/6 ps-[24px] flex flex-col gap-4 min-w-[300px]">
-			{#if (prevPage && prevPage === '/likedVideo') || likedVideos.includes(video.id)}
-				<!-- playlist video piaciuti  -->
-				<div class="border p-5 rounded-xl max-h-[500px] overflow-y-scroll flex flex-col gap-4">
-					<div>
-						<h1 class="font-bold text-xl">Video piaciuti</h1>
-						<p>
-							<span>{$page.data.user.name} - </span>
-							<span>{`${likedVideos.indexOf(video.id) + 1} / ${likedVideos.length}`}</span>
-						</p>
+		<!-- info user video -->
+		<div
+			on:click={() => {
+				if (!infoContOpen) {
+					showMoreText();
+				}
+			}}
+			on:keypress={() => {}}
+			style:line-Height="1.5rem"
+			class={`mt-4 bg-[#f2f2f2] p-2 rounded-md ${!infoContOpen ? 'hover:bg-[#d5d5d5]' : ''} `}
+			style:cursor={!infoContOpen ? 'pointer' : 'auto'}
+		>
+			<div bind:this={descContainer} class="info-use overflow-hidden">
+				<!-- views and publish -->
+				<p class="font-bold">
+					<span
+						>{`${compactNumber(+video.statistics.viewCount)
+							.toString()
+							.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} visualizzazioni`}
+					</span>
+					<span>
+						{daysBetween(video.snippet.publishedAt)}
+					</span>
+				</p>
+				<!-- description -->
+				<p bind:innerHTML={stringWithLinks} contenteditable="false" />
+			</div>
+			<button
+				class="font-semibold"
+				bind:this={descButton}
+				on:click|stopPropagation={(e) => {
+					if (!infoContOpen) {
+						showMoreText();
+					} else {
+						showLessText();
+						document.body.scrollTo(0, 0);
+					}
+				}}>{!infoContOpen ? 'Mostra Altro' : 'Mostra Meno'}</button
+			>
+		</div>
 
-						<div class="text-3xl">
-							<button
-								on:click={() => {
-									if (likedVideos.indexOf(video.id) === 0) {
-										goto(`/video/${likedVideos[likedVideos.length - 1]}`, {
-											replaceState: true,
-											invalidateAll: false
-										});
-									} else {
-										goto(`/video/${likedVideos[likedVideos.indexOf(video.id) - 1]}`, {
-											replaceState: true,
-											invalidateAll: false
-										});
-									}
-								}}><Icon icon="material-symbols:skip-previous-rounded" /></button
+		<!-- comments -->
+		<div class="comments">
+			<!-- header comments -->
+			<div class="header py-4 flex gap-5">
+				{#if comments}
+					<span>{`${comments.length} commenti`}</span>
+				{/if}
+				<div class="order">
+					<button>Ordina per</button>
+					<ul class="hidden">
+						<li><button>Commenti popolari</button></li>
+						<li><button>dal piu recente</button></li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="add-comments pb-4">
+				{#if login}
+					<div class="user-inner-comment flex items-start gap-4">
+						<div
+							class="shrink-0 flex justify-center items-center overflow-hidden w-12 h-12 bg-slate-400 rounded-full"
+						>
+							{login.name.charAt(0).toUpperCase()}
+						</div>
+						<div class="w-full flex flex-col gap-2 relative">
+							<input
+								bind:value={textComment}
+								on:focus={() => {
+									focused = true;
+								}}
+								class="focus:outline-none border-b-[1px] w-full z-10"
+								type="text"
+								placeholder="Aggiungi un commento..."
+							/>
+							<div
+								class="line absolute top-6 border-b-2 border-black origin-center transition-[.5s] w-full"
+								style:transform={focused ? 'scale(1)' : 'scale(0)'}
+							/>
+							<div
+								style:height={focused ? '100%' : '0'}
+								class="buttons flex pt-2 justify-end gap-2 overflow-hidden"
 							>
-							<button
-								on:click={() => {
-									if (likedVideos.indexOf(video.id) === likedVideos.length - 1) {
-										goto(`/video/${likedVideos[0]}`, {
-											replaceState: true,
-											invalidateAll: false
-										});
-									} else {
-										goto(`/video/${likedVideos[likedVideos.indexOf(video.id) + 1]}`, {
-											replaceState: true,
-											invalidateAll: false
-										});
-									}
-								}}><Icon icon="material-symbols:skip-next-rounded" /></button
-							>
+								<button
+									on:click={() => {
+										focused = false;
+									}}
+									class="hover:bg-gray-300 py-2 px-3 rounded-3xl">Annulla</button
+								>
+								<button
+									disabled={textComment === ''}
+									on:click={addComment}
+									class="hover:bg-[#065fd4] bg-[#065ff9] text-white py-2 px-3 rounded-3xl disabled:opacity-50"
+									>Commenta</button
+								>
+							</div>
 						</div>
 					</div>
+				{:else}
+					<button
+						on:click={() => {
+							goto('/login');
+						}}
+						class="flex items-center gap-2"
+					>
+						<div
+							class="thumb text-blue-600 border overflow-hidden border-blue-600 w-12 h-12 flex justify-center items-center rounded-full text-5xl"
+						>
+							<Icon icon="mdi:account" />
+						</div>
+						<input type="text" placeholder="aggiungi un commento" class="pointer-events-none" />
+					</button>
+				{/if}
+			</div>
 
-					{#each likedVideosRes as likedVideo}
+			<div class="comments-listn flex flex-col gap-5 mt-4">
+				{#if comments}
+					{#each comments as comment}
+						<div
+							on:focus={() => {}}
+							on:mouseover={() => {
+								if (comment.id === 'myid') {
+									hover = true;
+								}
+							}}
+							on:mouseleave={() => {
+								if (comment.id === 'myid' && showMenuComment == false) {
+									hover = false;
+								}
+							}}
+							class="comment-cont flex gap-5"
+						>
+							<div class="user-thum shrink-0 w-12 h-12">
+								{#if comment.snippet.topLevelComment.snippet?.authorProfileImageUrl == 'user'}
+									<div
+										class="rounded-full w-full h-full flex justify-center items-center bg-slate-400"
+									>
+										{comment.snippet.topLevelComment.snippet.authorDisplayName.charAt(0)}
+									</div>
+								{:else}
+									<img
+										class="rounded-full w-full"
+										src={comment.snippet.topLevelComment.snippet?.authorProfileImageUrl}
+										alt={comment.snippet.topLevelComment.snippet.authorDisplayName.charAt(0)}
+									/>
+								{/if}
+							</div>
+
+							<!-- comment-details -->
+							{#if comment.id === 'myid'}
+								<div class="w-full">
+									<!-- ------------------------------------------ -->
+
+									{#if modifyCommentBool}
+										<div class="user-inner-comment flex items-start gap-4 bg-white w-full">
+											<div class="w-full flex flex-col gap-2 relative">
+												<input
+													bind:value={textCommentModify}
+													on:focus={() => {
+														focusedModify = true;
+													}}
+													class="focus:outline-none border-b-[1px] w-full z-10"
+													type="text"
+													placeholder="Aggiungi un commento..."
+												/>
+												<div
+													class="line absolute top-6 border-b-2 border-black origin-center transition-[.5s] w-full"
+													style:transform={focusedModify ? 'scale(1)' : 'scale(0)'}
+												/>
+												<div
+													style:height={focusedModify ? '100%' : '0'}
+													class="buttons flex pt-2 justify-end gap-2 overflow-hidden"
+												>
+													<button
+														on:click={() => {
+															modifyCommentBool = false;
+														}}
+														class="hover:bg-gray-300 py-2 px-3 rounded-3xl"
+														>Annulla
+													</button>
+													<button
+														disabled={textCommentModify === ''}
+														on:click={modifyComment}
+														class="hover:bg-[#065fd4] bg-[#065ff9] text-white py-2 px-3 rounded-3xl disabled:opacity-50"
+														>Salva
+													</button>
+												</div>
+											</div>
+										</div>
+									{:else}
+										<div class="comment-details flex flex-col gap-1">
+											<p class="flex items-center gap-3">
+												<span class="user font-bold"
+													>{comment.snippet.topLevelComment.snippet.authorDisplayName}</span
+												><span
+													>{daysBetween(comment.snippet.topLevelComment.snippet.publishedAt)}</span
+												>
+											</p>
+											<p contenteditable="false">
+												{comment.snippet.topLevelComment.snippet.textOriginal}
+											</p>
+											<div class="buttons-like-unlike flex">
+												<button class="like flex items-center gap-1" style:padding="5px"
+													><Icon icon="mdi:like-outline" />{comment.snippet.topLevelComment.snippet
+														.likeCount}</button
+												>
+												<button class="dislike px-2"><Icon icon="mdi:dislike-outline" /></button>
+											</div>
+										</div>
+									{/if}
+								</div>
+							{:else}
+								<div class="comment-details flex flex-col gap-1">
+									<p class="flex items-center gap-3">
+										<span class="user font-bold"
+											>{comment.snippet.topLevelComment.snippet.authorDisplayName}</span
+										><span>{daysBetween(comment.snippet.topLevelComment.snippet.publishedAt)}</span>
+									</p>
+									{#if comment.id === 'myid'}
+										<p
+											bind:innerHTML={comment.snippet.topLevelComment.snippet.textOriginal}
+											contenteditable="true"
+										/>
+									{:else}
+										<p contenteditable="false">
+											{comment.snippet.topLevelComment.snippet.textOriginal}
+										</p>
+									{/if}
+									<div class="buttons-like-unlike flex">
+										<button class="like flex items-center gap-1" style:padding="5px"
+											><Icon icon="mdi:like-outline" />{comment.snippet.topLevelComment.snippet
+												.likeCount}</button
+										>
+										<button class="dislike px-2"><Icon icon="mdi:dislike-outline" /></button>
+									</div>
+								</div>
+							{/if}
+
+							{#if comment.id === 'myid' && hover && modifyCommentBool == false}
+								<div class="ms-auto relative">
+									<button
+										on:click={() => {
+											showMenuComment = !showMenuComment;
+										}}
+									>
+										<Icon icon="mdi:dots-vertical" class="text-xl" />
+									</button>
+									<ul
+										class="py-3 rounded-xl border absolute top-5 left-0 bg-white"
+										style:display={showMenuComment ? 'block' : 'none'}
+									>
+										<li>
+											<button
+												on:click={() => {
+													modifyCommentBool = true;
+													showMenuComment = false;
+												}}
+												class="px-5 py-2 flex items-center gap-3 hover:bg-gray-400 w-full"
+												><Icon
+													icon="streamline:interface-edit-pencil-change-edit-modify-pencil-write-writing"
+													class="text-xl"
+												/><span>Modifica</span></button
+											>
+										</li>
+										<li>
+											<button
+												on:click={deleteComment}
+												class="px-5 py-2 flex items-center gap-3 hover:bg-gray-400 w-full"
+												><Icon
+													icon="material-symbols:delete-outline-rounded"
+													class="text-xl"
+												/><span>Elimina</span></button
+											>
+										</li>
+									</ul>
+								</div>
+							{/if}
+						</div>
+					{/each}
+				{/if}
+			</div>
+		</div>
+	</div>
+
+	<!-- right-bar-->
+	<div class="basis-2/6 ps-[24px] flex flex-col gap-4 min-w-[300px]">
+		{#if ((prevPage && prevPage === '/likedVideo') || likedVideos.includes(video.id)) && login}
+			<!-- playlist video piaciuti  -->
+			<div class="border p-5 rounded-xl max-h-[500px] overflow-y-scroll flex flex-col gap-4">
+				<div>
+					<h1 class="font-bold text-xl">Video piaciuti</h1>
+					<p>
+						<span>{$page.data.user.name} - </span>
+						<span>{`${likedVideos.indexOf(video.id) + 1} / ${likedVideos.length}`}</span>
+					</p>
+
+					<div class="text-3xl">
 						<button
 							on:click={() => {
-								goto(`/video/${likedVideo.id}`, {
-									replaceState: true,
-									invalidateAll: false
-								});
-							}}
-							class="text-start flex gap-2 text-black"
+								if (likedVideos.indexOf(video.id) === 0) {
+									goto(`/video/${likedVideos[likedVideos.length - 1]}`, {
+										replaceState: true,
+										invalidateAll: false
+									});
+								} else {
+									goto(`/video/${likedVideos[likedVideos.indexOf(video.id) - 1]}`, {
+										replaceState: true,
+										invalidateAll: false
+									});
+								}
+							}}><Icon icon="material-symbols:skip-previous-rounded" /></button
 						>
-							<div class="shrink-0 grow-0">
-								<img
-									class="object-cover aspect-video max-w-[128px] rounded-lg"
-									src={likedVideo.snippet.thumbnails.standard.url}
-									alt=""
-								/>
-							</div>
-							<div>
-								<h1
-									class="font-semibold text-[14px] overflow-hidden w-full max-h-12 text-ellipsis line-clamp-2"
-								>
-									{likedVideo.snippet.title}
-								</h1>
-								<button
-									on:click={(e) => {
-										e.stopPropagation();
-										goto(`/channel/${likedVideo.snippet.channelId}`, {
-											noScroll: false
-										});
-									}}
-									class="mt-2 text-left text-[12px] overflow-hidden w-full text-[#606060] text-ellipsis line-clamp-1"
-								>
-									{likedVideo.snippet.channelTitle}
-								</button>
-								<div class="flex gap-1 text-[12px] text-[#606060]">
-									<span class="shrink-0"
-										>{`${compactNumber(+likedVideo.statistics.viewCount)
-											.toString()
-											.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} visualizzazioni`}
-									</span>
-									<Icon icon="mdi:dot" />
-									<span class="overflow-hidden w-full text-ellipsis line-clamp-1">
-										{daysBetween(likedVideo.snippet.publishedAt)}
-									</span>
-								</div>
-							</div>
-						</button>
-					{/each}
+						<button
+							on:click={() => {
+								if (likedVideos.indexOf(video.id) === likedVideos.length - 1) {
+									goto(`/video/${likedVideos[0]}`, {
+										replaceState: true,
+										invalidateAll: false
+									});
+								} else {
+									goto(`/video/${likedVideos[likedVideos.indexOf(video.id) + 1]}`, {
+										replaceState: true,
+										invalidateAll: false
+									});
+								}
+							}}><Icon icon="material-symbols:skip-next-rounded" /></button
+						>
+					</div>
 				</div>
-			{/if}
-			<!-- video correlati   -->
-			<div class="flex flex-col gap-4">
-				{#each relatedVideos as RelatedVideo}
-					<a
-						href={`/video/${RelatedVideo.id}`}
-						data-sveltekit-reload
+
+				{#each likedVideosRes as likedVideo}
+					<button
+						on:click={() => {
+							goto(`/video/${likedVideo.id}`, {
+								replaceState: true,
+								invalidateAll: false
+							});
+						}}
 						class="text-start flex gap-2 text-black"
 					>
 						<div class="shrink-0 grow-0">
 							<img
-								class="object-cover aspect-video max-w-[168px] rounded-lg"
-								src={RelatedVideo.snippet.thumbnails.standard?.url}
+								class="object-cover aspect-video max-w-[128px] rounded-lg"
+								src={likedVideo.snippet.thumbnails.standard.url}
 								alt=""
 							/>
 						</div>
@@ -855,37 +799,79 @@
 							<h1
 								class="font-semibold text-[14px] overflow-hidden w-full max-h-12 text-ellipsis line-clamp-2"
 							>
-								{RelatedVideo.snippet.title}
+								{likedVideo.snippet.title}
 							</h1>
 							<button
 								on:click={(e) => {
 									e.stopPropagation();
-									goto(`/channel/${RelatedVideo.snippet.channelId}`, {
-										replaceState: true
+									goto(`/channel/${likedVideo.snippet.channelId}`, {
+										noScroll: false
 									});
 								}}
 								class="mt-2 text-left text-[12px] overflow-hidden w-full text-[#606060] text-ellipsis line-clamp-1"
 							>
-								{RelatedVideo.snippet.channelTitle}
+								{likedVideo.snippet.channelTitle}
 							</button>
 							<div class="flex gap-1 text-[12px] text-[#606060]">
 								<span class="shrink-0"
-									>{`${compactNumber(+RelatedVideo.statistics.viewCount)
+									>{`${compactNumber(+likedVideo.statistics.viewCount)
 										.toString()
 										.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} visualizzazioni`}
 								</span>
 								<Icon icon="mdi:dot" />
 								<span class="overflow-hidden w-full text-ellipsis line-clamp-1">
-									{daysBetween(RelatedVideo.snippet.publishedAt)}
+									{daysBetween(likedVideo.snippet.publishedAt)}
 								</span>
 							</div>
 						</div>
-					</a>
+					</button>
 				{/each}
 			</div>
+		{/if}
+		<!-- video correlati   -->
+		<div class="flex flex-col gap-4">
+			{#each relatedVideos as RelatedVideo}
+				<a
+					href={`/video/${RelatedVideo.id}`}
+					data-sveltekit-reload
+					class="text-start flex gap-2 text-black"
+				>
+					<div class="shrink-0 grow-0">
+						<img
+							class="object-cover aspect-video max-w-[168px] rounded-lg"
+							src={RelatedVideo.snippet.thumbnails.standard?.url}
+							alt=""
+						/>
+					</div>
+					<div>
+						<h1
+							class="font-semibold text-[14px] overflow-hidden w-full max-h-12 text-ellipsis line-clamp-2"
+						>
+							{RelatedVideo.snippet.title}
+						</h1>
+						<a
+							href={`/channel/${RelatedVideo.snippet.channelId}`}
+							class="mt-2 text-left text-[12px] overflow-hidden w-full text-[#606060] text-ellipsis line-clamp-1"
+						>
+							{RelatedVideo.snippet.channelTitle}
+						</a>
+						<div class="flex gap-1 text-[12px] text-[#606060]">
+							<span class="shrink-0"
+								>{`${compactNumber(+RelatedVideo.statistics.viewCount)
+									.toString()
+									.replace(/\B(?=(\d{3})+(?!\d))/g, '.')} visualizzazioni`}
+							</span>
+							<Icon icon="mdi:dot" />
+							<span class="overflow-hidden w-full text-ellipsis line-clamp-1">
+								{daysBetween(RelatedVideo.snippet.publishedAt)}
+							</span>
+						</div>
+					</div>
+				</a>
+			{/each}
 		</div>
 	</div>
-{/if}
+</div>
 
 <style>
 	.button-standard {

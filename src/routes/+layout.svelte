@@ -25,7 +25,7 @@
 			showSid = !showSid;
 		}
 
-		console.log(visible);
+		// console.log(visible);
 	};
 
 	beforeNavigate(() => {
@@ -53,7 +53,7 @@
 					<Sidebar showSidebar={showSid} />
 				</div>
 
-				<div style:padding-left={showSid ? '200px' : '50px'} class="w-full">
+				<div style:padding-left={showSid ? '200px' : '80px'} class="w-full">
 					<slot />
 				</div>
 			{:else}
