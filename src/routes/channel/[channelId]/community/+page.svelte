@@ -2,9 +2,15 @@
 	import Icon from '@iconify/svelte';
 	import type { PageData } from './$types';
 	export let data: PageData;
+
+	// reactive variables
 	$: channel = data.channel.items[0];
 	$: posts = data.community.items[0].community;
+	// ----------------
+
+	// console logs
 	$: console.log(posts.length);
+	// -------------
 </script>
 
 <div class="flex flex-col gap-4 px-20 pt-10">

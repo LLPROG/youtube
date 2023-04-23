@@ -8,16 +8,21 @@
 	import { userLocals } from '$lib/stores/store';
 
 	export let data: PageData;
+
+	// reactive variables
+	$: login = $page.data.user;
 	$: channelVideos = data.videosForChannel;
 	$: console.log(channelVideos);
+	// ---------------------
 
-	let _refs: HTMLUListElement[] = [];
+	let _refs: HTMLUListElement[] = []; // ref var for open different subscribe menu
 	let channelSubscribes: String[] = [];
-	$: login = $page.data.user;
 
+	// console logs vars
 	// $: console.log(data.videosForChannel, 'ch');
+	// ------------
 
-	// open menu for unsubscribe
+	// open single menu for unsubscribe
 	const openMenu = (i: any) => {
 		if (_refs[i].classList.contains('hidden')) {
 			_refs[i].classList.remove('hidden');
@@ -80,11 +85,11 @@
 								goto(`/channel/${channel.id}`);
 							}}
 							on:keypress={() => {}}
-							class="text-[18px] font-semibold"
+							class="text-[18px] text-primary-color font-semibold"
 						>
 							{channel.snippet.title}
 						</h1>
-						<p class="pt-2 flex text-[12px] text-[#606060]">
+						<p class="pt-2 flex text-[12px] text-secondary-color">
 							<span class="shrink-0"
 								>{`${compactNumber(channel.statistics.subscriberCount)
 									.toString()
@@ -138,6 +143,7 @@
 		</div>
 	{/if}
 {:else}
+	<!-- cont if not login -->
 	<div class="flex justify-center items-center w-full">
 		<div class="flex flex-col gap-5 items-center pt-[140px]">
 			<div class="w-[120px]">

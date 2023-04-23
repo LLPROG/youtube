@@ -5,22 +5,26 @@
 	import { daysBetween } from '$lib/global functions/days_between';
 	import { onMount } from 'svelte';
 	export let data: PageData;
+
+	// reactive variables
 	$: videos = data.videosChannel.items;
+
+	// console logs
 	// console.log(data);
+	// ----------------
+
 	onMount(() => {
 		document.body.scrollTo(0, 0);
 	});
 </script>
 
+<!-- videos container -->
 <div class="flex flex-wrap px-10 justify-start w-fit">
 	{#each videos as video}
+		<!-- video card -->
 		<div class="shrink-0 grow-0 p-3 md:basis-1/2 lg:basis-1/3 xl:basis-1/4 w-full min-w-[19vw]">
-			<button
-				on:click={() => {
-					goto(`/video/${video.id}`);
-				}}
-				class="cursor-pointer p-0"
-			>
+			<a href={`/video/${video.id}`} class="cursor-pointer p-0">
+				<!-- thumb -->
 				<div>
 					<img
 						src={video.snippet.thumbnails.standard?.url}
@@ -29,6 +33,7 @@
 					/>
 				</div>
 
+				<!-- content -->
 				<div class="flex gap-3 mt-4 text-gray-600 text-start">
 					<img src={video.snippet.thumbnails.standard?.url} alt="" class="rounded-full w-10 h-10" />
 					<div class="flex flex-col items-start">
@@ -54,7 +59,7 @@
 						</p>
 					</div>
 				</div>
-			</button>
+			</a>
 		</div>
 	{/each}
 </div>

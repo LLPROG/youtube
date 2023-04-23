@@ -1,23 +1,20 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { goto } from '$app/navigation';
 	import { daysBetween } from '$lib/global functions/days_between';
 	import { compactNumber } from '$lib/global functions/compactNumer';
 
 	export let data;
-	// console.log(data.videos.items[0].snippet.thumbnails.standard.url);
 	$: videos = data.videos.items;
+	// $: console.log(data.videos);
 </script>
 
+<!-- videos container -->
 <div class="flex flex-wrap px-10 pt-5 justify-start w-fit">
 	{#each videos as video}
+		<!-- video card cont -->
 		<div class="shrink-0 grow-0 p-2 md:basis-1/1 lg:basis-1/2 xl:basis-1/3 w-full">
-			<button
-				on:click={() => {
-					goto(`/video/${video?.id}`);
-				}}
-				class="cursor-pointer p-0"
-			>
+			<!-- video card -->
+			<a href={`/video/${video?.id}`} class="cursor-pointer p-0">
 				<div>
 					<img
 						src={video.snippet.thumbnails.standard?.url}
@@ -38,12 +35,8 @@
 						>
 							{video.snippet.title}
 						</h3>
-						<button
-							on:click={(e) => {
-								e.stopPropagation();
-								goto(`/channel/${video.snippet.channelId}`);
-							}}
-							class="text-sm">{video.snippet.channelTitle}</button
+						<a href={`/channel/${video.snippet.channelId}`} class="text-sm"
+							>{video.snippet.channelTitle}</a
 						>
 						<p class="text-sm">
 							<span
@@ -56,7 +49,7 @@
 						</p>
 					</div>
 				</div>
-			</button>
+			</a>
 		</div>
 	{/each}
 </div>

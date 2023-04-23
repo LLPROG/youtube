@@ -15,22 +15,22 @@ export const handle1: Handle = async ({ event, resolve }) => {
 
 export const handle = sequence(handle1);
 
-export const handleFetch: HandleFetch = ({ request, event, fetch }) => {
-	if (request.url.startsWith('https://dummyjson.com/')) {
-		const cookie = event.request.headers.get('cookie');
-		if (cookie) {
-			request.headers.set('cookie', cookie);
-		}
-	}
-	return fetch(request);
-};
+// export const handleFetch: HandleFetch = ({ request, event, fetch }) => {
+// 	if (request.url.startsWith('https://youtube.googleapis.com/youtube')) {
+// 		const cookie = event.request.headers.get('cookie');
+// 		if (cookie) {
+// 			request.headers.set('cookie', cookie);
+// 		}
+// 	}
+// 	return fetch(request);
+// };
 
-export const handleError: HandleServerError = ({ error }) => {
+export const handleError: HandleServerError = ({ error, event }) => {
 	// console.log('This is coming from handleError.');
 	console.log(error, 'hookError'); // Send to sentry or any error logging service.
 
 	return {
-		message: 'An unexpected error has occurred.',
+		message: 'Errore',
 		code: 'UNEXPECTED'
 	};
 };

@@ -3,9 +3,14 @@
 	import { compactNumber } from '$lib/global functions/compactNumer';
 	import type { PageData } from './$types';
 	export let data: PageData;
+
+	// reactive variables
 	$: about = data.community.items[0].about;
 	$: channel = data.channel.items[0];
+
+	// console logs
 	$: console.log(channel);
+	//------------------
 
 	// italian date formatter funcion
 	const italianTimeFormat = (dateUTC: Date) => {

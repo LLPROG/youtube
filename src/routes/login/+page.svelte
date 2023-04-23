@@ -4,7 +4,7 @@
 
 	export let form: ActionData;
 
-	$: console.log(form);
+	// $: console.log(form);
 </script>
 
 <h1 class="text-center text-2xl">Inserisci le tue credenziali</h1>

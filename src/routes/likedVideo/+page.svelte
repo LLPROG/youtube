@@ -5,60 +5,22 @@
 	import { goto } from '$app/navigation';
 	import { compactNumber } from '$lib/global functions/compactNumer';
 	import { daysBetween } from '$lib/global functions/days_between';
-	import { flip } from 'svelte/animate';
 	import { onMount } from 'svelte';
 
 	export let data: PageData;
 
+	// reactive variables
 	$: videos = data.videos;
-	$: console.log(videos);
 
-	let draggableElement: any = null;
-	let overDragId: any = null;
-	let startDragId: any = null;
+	// console logs variables
+	// $: console.log(videos);
+	// -------------
+
+	let hoverVideo = false; // hover bool var for styling first video
+
 	let likedVideos: string[] = [];
 
 	// $: console.log(videos.length);
-
-	// drag and drop functions
-
-	function array_move(arr: any, old_index: any, new_index: any) {
-		if (new_index >= arr.length) {
-			var k = new_index - arr.length + 1;
-			while (k--) {
-				arr.push(undefined);
-			}
-		}
-		arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-		return arr; // for testing
-	}
-
-	function dragStart(i: any, e: any) {
-		startDragId = i;
-		draggableElement = null;
-		// console.log(e);
-		// console.log(i, 'dragstart');
-		//-------------
-		setTimeout(() => (e.target.style.opacity = '0.5'), 0);
-		draggableElement = videos[i];
-	}
-
-	function dragEnd(i: any, e: any) {
-		setTimeout(() => (e.target.style.opacity = '1'), 0);
-		console.log(overDragId, 'over id');
-	}
-
-	function dragOver(i: any, e: any) {
-		overDragId = i;
-	}
-
-	function dragDrop() {
-		console.log('drop');
-		array_move(videos.items, startDragId, overDragId);
-		array_move(likedVideos, startDragId, overDragId);
-		localStorage.likedVideos = JSON.stringify(likedVideos);
-		videos = videos;
-	}
 
 	onMount(() => {
 		if (localStorage.likedVideos) {
@@ -77,14 +39,30 @@
 		<div class="basis-1/4 shrink-0 min-w-[370px] fixed">
 			<div class="header border h-[85vh] rounded-2xl p-6 bg-slate-300">
 				<!-- play all videos -->
-				<div class="w-full h-60 flex items-center justify-center">
-					<div class="phone-card bg-black h-[100%] rounded-xl aspect-[9/16] flex items-center">
+				<div
+					class="w-fit rounded-md h-60 flex items-center justify-center relative left-[50%] translate-x-[-50%]"
+				>
+					<a
+						href={`/video/${videos.items[0].id}`}
+						on:mouseover={() => {
+							hoverVideo = true;
+						}}
+						on:mouseleave={() => {
+							hoverVideo = false;
+						}}
+						on:focus={() => {
+							hoverVideo = true;
+						}}
+						class={`phone-card bg-black h-[100%] rounded-md aspect-[9/16] flex items-center cursor-pointer ${
+							hoverVideo ? 'hover-style' : ''
+						}`}
+					>
 						<img
 							src={videos.items[0].snippet.thumbnails.standard.url}
 							alt={videos.items[0].snippet.title}
 							class="rounded-md object-cover aspect-[9/16]"
 						/>
-					</div>
+					</a>
 				</div>
 
 				<!-- info -->
@@ -116,23 +94,7 @@
 		<div class="ms-[370px] basis-3/4 pt-3">
 			<div class="index flex flex-col justify-start w-full pe-3">
 				{#each videos.items as video, i (video.id)}
-					<div
-						animate:flip={{ duration: 200 }}
-						draggable="true"
-						on:dragstart={(e) => {
-							dragStart(i, e);
-						}}
-						on:dragend={(e) => {
-							dragEnd(i, e);
-						}}
-						on:dragover|preventDefault={(e) => {
-							dragOver(i, e);
-						}}
-						on:drop|preventDefault={() => {
-							dragDrop();
-						}}
-						class="flex items-center p-3 ms-1 hover:bg-slate-200 rounded-lg w-full"
-					>
+					<div class="flex items-center p-3 ms-1 hover:bg-slate-200 rounded-lg w-full">
 						<span class="pe-4">{i + 1}</span>
 						<button
 							on:click={() => {
@@ -207,5 +169,21 @@
 		background-color: rgba(0, 0, 0, 0.103);
 		padding: 5px 10px;
 		font-size: 14px;
+	}
+
+	.hover-style::after {
+		content: 'RIPRODUCI TUTTO';
+		color: white;
+		display: flex;
+		justify-content: center;
+		font-size: 12px;
+		align-items: center;
+		position: absolute;
+		inset: 0 0 0 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.611);
+		border-radius: 20px;
+		transition: 0.3s;
 	}
 </style>
